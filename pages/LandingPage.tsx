@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useBranding } from '../context/BrandingContext'; // New Import
+import ThemeToggle from '../components/ui/ThemeToggle';
 
 // FIX: Refactored to a standalone interface for better readability and type safety.
 interface FeatureCardProps {
@@ -88,8 +89,9 @@ const LandingPage: React.FC = () => {
                          <div className="text-2xl font-bold text-primary">{branding.brandName}</div>
                        )}
                     </div>
-                    <div className="space-x-4">
-                        <Link to="/login" className="text-primary font-semibold hover:underline">Login</Link>
+                    <div className="flex items-center space-x-4">
+                        <ThemeToggle />
+                        <Link to="/login" className="text-primary dark:text-gray-300 font-semibold hover:underline">Login</Link>
                         <Link to="/register" className="bg-primary text-white py-2 px-5 rounded-full hover:bg-secondary transition duration-300">Register</Link>
                     </div>
                 </nav>
