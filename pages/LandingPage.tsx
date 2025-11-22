@@ -1,6 +1,7 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useBranding } from '../context/BrandingContext'; // New Import
 
 const FeatureCard = ({ icon, title, children }: { icon: React.ReactNode, title: string, children: React.ReactNode }) => (
     <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
@@ -33,9 +34,15 @@ const TechCube = () => (
 
 const LandingPage: React.FC = () => {
     const navigate = useNavigate();
+    const { branding, loading } = useBranding();
+
+    useEffect(() => {
+        if (!loading) {
+            document.title = `${branding.brandName} Member Portal`;
+        }
+    }, [branding, loading]);
 
     const quickLogin = (email: string) => {
-        // Navigate to login and pass email, so login page can pre-fill it
         navigate(`/login?email=${email}`);
     }
 
@@ -46,12 +53,16 @@ const LandingPage: React.FC = () => {
         { role: 'Super Admin', email: 'superadmin@test.com', color: 'yellow' },
     ];
 
+    if (loading) {
+        return <div>Loading...</div>; // Or a proper spinner component
+    }
+
     return (
         <div className="bg-light text-dark font-sans">
             {/* Header */}
             <header className="sticky top-0 bg-white/80 backdrop-blur-md shadow-sm z-50">
                 <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
-                    <div className="text-2xl font-bold text-primary">NAMPDTech</div>
+                    <div className="text-2xl font-bold text-primary">{branding.brandName}</div>
                     <div className="space-x-4">
                         <Link to="/login" className="text-primary font-semibold hover:underline">Login</Link>
                         <Link to="/register" className="bg-primary text-white py-2 px-5 rounded-full hover:bg-secondary transition duration-300">Register</Link>
@@ -129,7 +140,11 @@ const LandingPage: React.FC = () => {
             {/* Footer */}
             <footer className="bg-primary text-white">
                 <div className="container mx-auto px-6 py-8 text-center">
-                    <p>&copy; {new Date().getFullYear()} NAMPDTech. All Rights Reserved.</p>
+                    <div className="mb-4">
+                        <p>{branding.address}</p>
+                        <p>{branding.contactEmail} | {branding.contactPhone}</p>
+                    </div>
+                    <p>&copy; {new Date().getFullYear()} {branding.brandName}. All Rights Reserved.</p>
                     <p className="text-sm opacity-70">Empowering Mobile Phone Technicians Across the Nation.</p>
                     <p className="text-sm mt-4 opacity-50">Developed by Jadan Technologies</p>
                 </div>

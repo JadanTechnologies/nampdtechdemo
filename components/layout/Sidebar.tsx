@@ -1,6 +1,8 @@
+
 import React, { useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useBranding } from '../../context/BrandingContext'; // New Import
 import { UserRole, MembershipStatus } from '../../types';
 
 interface SidebarProps {
@@ -14,6 +16,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, sidebarE
   const location = useLocation();
   const { pathname } = location;
   const { user } = useAuth();
+  const { branding } = useBranding(); // New: Get branding info
 
   const trigger = useRef<HTMLButtonElement>(null);
   const sidebar = useRef<HTMLDivElement>(null);
@@ -108,8 +111,12 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, sidebarE
             </svg>
           </button>
           {/* Logo */}
-          <NavLink to="/dashboard" className="block text-white text-2xl font-bold">
-            NAMPDTech
+          <NavLink to="/dashboard" className="block">
+            {branding.logoUrl ? (
+                <img src={branding.logoUrl} alt={`${branding.brandName} Logo`} className={`h-10 w-auto transition-all duration-200 ${sidebarExpanded ? 'lg:w-32' : 'lg:w-10'} 2xl:w-32`} />
+            ) : (
+                <span className="text-white text-2xl font-bold">{branding.brandName}</span>
+            )}
           </NavLink>
         </div>
 
