@@ -3,6 +3,8 @@ import { getMembers, updateMember, addAdminAction } from '../services/mockApi';
 import { MemberApplication, UserRole, MembershipStatus, AccountStatus, AdminActionType } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import Spinner from '../components/ui/Spinner';
+import Toast from '../components/ui/Toast';
+import EditMemberModal from '../components/admin/EditMemberModal';
 
 const MembersPage: React.FC = () => {
     const { user } = useAuth();
@@ -22,6 +24,10 @@ const MembersPage: React.FC = () => {
     const [showForumModal, setShowForumModal] = useState(false);
     const [newForumStatus, setNewForumStatus] = useState<'active' | 'muted' | 'banned'>('active');
 
+    // New state for editing member
+    const [editingMember, setEditingMember] = useState<MemberApplication | null>(null);
+    const [toastMessage, setToastMessage] = useState<string | null>(null);
+
 
     const fetchMembers = async () => {
         setLoading(true);
@@ -36,6 +42,7 @@ const MembersPage: React.FC = () => {
 
     useEffect(() => {
         fetchMembers();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     const handleAction = async () => {
@@ -49,7 +56,7 @@ const MembersPage: React.FC = () => {
             if (actionType === 'Delete') updates.status = MembershipStatus.DELETED;
             
             await updateMember(actionMember.id, updates);
-            alert(`Member has been ${actionType.toLowerCase()}ed.`);
+            setToastMessage(`Member has been ${actionType.toLowerCase()}ed.`);
         } else if (user.role === UserRole.STATE_ADMIN) {
             // State Admins request approval from Super Admin
             await addAdminAction({
@@ -59,7 +66,7 @@ const MembersPage: React.FC = () => {
                 requestedBy: user.id,
                 requesterRole: user.role,
             });
-            alert(`Request to ${actionType} member has been sent for Super Admin approval.`);
+            setToastMessage(`Request to ${actionType} member has been sent for Super Admin approval.`);
         }
     
         setShowActionConfirm(false);
@@ -84,12 +91,20 @@ const MembersPage: React.FC = () => {
         if (!forumMember) return;
         
         await updateMember(forumMember.id, { forumStatus: newForumStatus });
-        alert(`Forum status for ${forumMember.fullName} updated to ${newForumStatus}.`);
+        setToastMessage(`Forum status for ${forumMember.fullName} updated to ${newForumStatus}.`);
         
         setShowForumModal(false);
         setForumMember(null);
         fetchMembers(); // Refresh data
     };
+
+    const handleSaveMember = async (updatedMember: MemberApplication) => {
+        await updateMember(updatedMember.id, updatedMember);
+        setToastMessage(`${updatedMember.fullName}'s profile has been updated.`);
+        setEditingMember(null);
+        fetchMembers();
+    };
+
 
     const filteredMembers = useMemo(() => {
         return allMembers
@@ -139,6 +154,7 @@ const MembersPage: React.FC = () => {
 
     return (
         <div>
+            {toastMessage && <Toast message={toastMessage} type="success" onClose={() => setToastMessage(null)} />}
             <h1 className="text-3xl font-bold text-dark dark:text-gray-100 mb-6">Member Directory</h1>
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -205,6 +221,7 @@ const MembersPage: React.FC = () => {
                                                 <div className="relative group">
                                                     <button className="font-medium text-primary hover:underline">Actions ▼</button>
                                                     <div className="absolute z-10 hidden group-hover:block bg-white dark:bg-gray-700 shadow-lg rounded-md right-0 w-40">
+                                                        <button onClick={() => setEditingMember(member)} className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600">Edit Profile</button>
                                                         <button onClick={() => openActionConfirm(member, 'Suspend')} className="block w-full text-left px-4 py-2 text-sm text-yellow-700 dark:text-yellow-400 hover:bg-gray-100 dark:hover:bg-gray-600">Suspend</button>
                                                         <button onClick={() => openActionConfirm(member, 'Ban')} className="block w-full text-left px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600">Ban</button>
                                                         <button onClick={() => openActionConfirm(member, 'Reactivate')} className="block w-full text-left px-4 py-2 text-sm text-green-700 dark:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-600">Reactivate</button>
@@ -265,6 +282,13 @@ const MembersPage: React.FC = () => {
                         </div>
                     </div>
                 </div>
+            )}
+             {editingMember && (
+                <EditMemberModal 
+                    member={editingMember}
+                    onClose={() => setEditingMember(null)}
+                    onSave={handleSaveMember}
+                />
             )}
         </div>
     );
