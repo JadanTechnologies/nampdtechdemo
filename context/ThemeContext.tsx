@@ -11,11 +11,16 @@ export const ThemeContext = createContext<ThemeContextType | undefined>(undefine
 
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
-    const storedTheme = localStorage.getItem('nampdtech-theme');
-    // Also check user's system preference
-    if (storedTheme) {
-        return storedTheme as Theme;
+    try {
+        const storedTheme = localStorage.getItem('nampdtech-theme');
+        // Validate the stored theme
+        if (storedTheme && (storedTheme === 'light' || storedTheme === 'dark')) {
+            return storedTheme;
+        }
+    } catch (error) {
+        console.error("Could not read theme preference from localStorage", error);
     }
+    // Fallback to system preference if nothing is stored or value is invalid
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   });
 
@@ -26,7 +31,11 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     } else {
       root.classList.remove('dark');
     }
-    localStorage.setItem('nampdtech-theme', theme);
+    try {
+        localStorage.setItem('nampdtech-theme', theme);
+    } catch (error) {
+        console.error("Could not save theme preference to localStorage", error);
+    }
   }, [theme]);
 
   const toggleTheme = () => {

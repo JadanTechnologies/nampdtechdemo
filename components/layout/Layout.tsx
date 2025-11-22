@@ -1,26 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 
 const Layout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarExpanded, setSidebarExpanded] = useState(false);
-
-  // Check localStorage for user preference on mount
-  useEffect(() => {
-    const savedPreference = localStorage.getItem('sidebar-expanded');
-    // Only apply saved preference on desktop view
-    if (window.innerWidth >= 1024 && savedPreference) {
-      setSidebarExpanded(savedPreference === 'true');
+  
+  // Initialize sidebarExpanded state from localStorage for persistence.
+  const [sidebarExpanded, setSidebarExpanded] = useState(() => {
+    try {
+      const savedPreference = localStorage.getItem('sidebar-expanded');
+      // On desktop, use the saved preference. Default to false on mobile.
+      if (window.innerWidth >= 1024) {
+        return savedPreference === 'true';
+      }
+    } catch (error) {
+        console.error("Could not read sidebar preference from localStorage", error);
     }
-  }, []);
+    return false; // Default to collapsed
+  });
 
-  // Handler to toggle and save preference
+
+  // Handler to toggle and save preference to localStorage
   const handleSidebarExpand = () => {
     setSidebarExpanded(prev => {
         const newState = !prev;
-        localStorage.setItem('sidebar-expanded', String(newState));
+        try {
+            localStorage.setItem('sidebar-expanded', String(newState));
+        } catch (error) {
+            console.error("Could not save sidebar preference to localStorage", error);
+        }
         return newState;
     });
   };
