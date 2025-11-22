@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NAMPDTech Member Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'primary': '#0D47A1', // A deep, professional blue
+              'secondary': '#1565C0', // A slightly lighter blue for accents
+              'accent': '#FFC107', // A warm gold/amber for calls to action
+              'light': '#F5F5F5', // A very light gray for backgrounds
+              'dark': '#212121', // A dark gray for text
+            },
+            animation: {
+              'flip-card': 'flip 1s forwards',
+              'rotate-cube': 'rotate-cube 20s infinite linear',
+            },
+            keyframes: {
+              flip: {
+                'from': { transform: 'rotateY(0deg)' },
+                'to': { transform: 'rotateY(180deg)' },
+              },
+              'rotate-cube': {
+                '0%': { transform: 'rotateX(0deg) rotateY(0deg)' },
+                '100%': { transform: 'rotateX(360deg) rotateY(360deg)' },
+              },
+            },
+          },
+        },
+      }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.6",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "recharts": "https://aistudiocdn.com/recharts@^3.4.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,64 @@
+
+import React, { useState } from 'react';
+import { MemberApplication } from '../../types';
+
+interface DigitalIdCardProps {
+  member: MemberApplication;
+}
+
+const DigitalIdCard: React.FC<DigitalIdCardProps> = ({ member }) => {
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  return (
+    <div 
+        className="w-[350px] h-[550px] perspective-1000 cursor-pointer" 
+        onClick={() => setIsFlipped(!isFlipped)}
+    >
+      <div 
+        className={`relative w-full h-full transition-transform duration-700 transform-style-preserve-3d ${isFlipped ? 'rotate-y-180' : ''}`}
+      >
+        {/* Front of the Card */}
+        <div className="absolute w-full h-full backface-hidden bg-white rounded-2xl shadow-2xl overflow-hidden border-4 border-primary">
+            <div className="bg-primary h-28 flex items-center justify-center text-white p-4">
+                <h1 className="text-xl font-bold text-center">NAMPDTech Member</h1>
+            </div>
+            <div className="flex flex-col items-center p-6 -mt-16">
+                <img src={member.passportPhotoUrl || `https://i.pravatar.cc/150?u=${member.id}`} alt="Member passport" className="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover" />
+                <h2 className="text-2xl font-bold text-dark mt-4">{member.fullName}</h2>
+                <p className="text-primary font-semibold">Active Member</p>
+                <div className="text-left w-full mt-6 space-y-3 text-sm">
+                    <p><strong>Member ID:</strong> {member.id.toUpperCase()}</p>
+                    <p><strong>State:</strong> {member.state}</p>
+                    <p><strong>Joined:</strong> {new Date(member.registrationDate).toLocaleDateString()}</p>
+                </div>
+            </div>
+             <div className="absolute bottom-4 left-0 right-0 text-center text-xs text-gray-400">
+                National Association of Mobile Phone Technicians
+             </div>
+        </div>
+
+        {/* Back of the Card */}
+        <div className="absolute w-full h-full backface-hidden bg-white rounded-2xl shadow-2xl rotate-y-180 border-4 border-primary p-6 flex flex-col justify-between">
+            <div>
+                <h3 className="font-bold text-primary mb-4 text-center">Official Membership ID</h3>
+                <div className="text-sm space-y-2">
+                    <p><strong>Full Name:</strong><br/>{member.fullName}</p>
+                    <p><strong>NIN:</strong><br/>{member.nin}</p>
+                    <p><strong>Email:</strong><br/>{member.email}</p>
+                    <p><strong>Phone:</strong><br/>{member.phone}</p>
+                </div>
+            </div>
+            <div className="flex flex-col items-center">
+                 <img src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=NAMPDTech-Member-${member.id}`} alt="QR Code" className="w-32 h-32" />
+                 <p className="text-xs text-gray-500 mt-2 text-center">Scan to verify membership</p>
+            </div>
+            <div className="text-xs text-gray-400 text-center border-t pt-2 mt-2">
+                This card is the property of NAMPDTech and must be returned upon request.
+            </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DigitalIdCard;
