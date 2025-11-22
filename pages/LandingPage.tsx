@@ -1,5 +1,4 @@
-
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useBranding } from '../context/BrandingContext'; // New Import
 
@@ -39,6 +38,7 @@ const TechCube = ({ cubeLogoUrl }: { cubeLogoUrl: string | null }) => (
 const LandingPage: React.FC = () => {
     const navigate = useNavigate();
     const { branding, loading } = useBranding();
+    const [verificationId, setVerificationId] = useState('');
 
     useEffect(() => {
         if (!loading) {
@@ -49,6 +49,13 @@ const LandingPage: React.FC = () => {
     const quickLogin = (email: string) => {
         navigate(`/login?email=${email}`);
     }
+    
+    const handleVerify = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (verificationId.trim()) {
+            navigate(`/verify?id=${verificationId.trim()}`);
+        }
+    };
 
     const demoUsers = [
         { role: 'Member', email: 'member@test.com', color: 'blue' },
@@ -121,7 +128,7 @@ const LandingPage: React.FC = () => {
                             Our multi-level approval process ensures all members are properly vetted by local and state leadership.
                         </FeatureCard>
                         {/* FIX: Added children prop to provide descriptive text for the FeatureCard. */}
-                         <FeatureCard title="Member Directory" icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>}>
+                         <FeatureCard title="Member Directory" icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656-.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>}>
                             Connect with fellow technicians across the nation through our comprehensive member directory.
                         </FeatureCard>
                         {/* FIX: Added children prop to provide descriptive text for the FeatureCard. */}
@@ -133,6 +140,32 @@ const LandingPage: React.FC = () => {
                             Keep your personal and business information up-to-date through your personal profile page.
                         </FeatureCard>
                     </div>
+                </div>
+            </section>
+
+             {/* Verification Section */}
+            <section className="py-20 bg-primary/5">
+                <div className="container mx-auto px-6 text-center">
+                    <h2 className="text-3xl font-bold text-dark">Verify a Member's Status</h2>
+                    <p className="text-dark/70 mt-2 mb-8 max-w-2xl mx-auto">
+                        Use our public verification tool to confirm if a technician is an active, registered member of {branding.brandName}. Enter their Membership ID below.
+                    </p>
+                    <form onSubmit={handleVerify} className="max-w-xl mx-auto flex flex-col sm:flex-row gap-3">
+                        <input
+                            type="text"
+                            value={verificationId}
+                            onChange={(e) => setVerificationId(e.target.value)}
+                            placeholder="Enter Member ID (e.g., mem-001)"
+                            className="w-full px-5 py-3 border border-gray-300 rounded-full focus:ring-secondary focus:border-secondary transition"
+                            required
+                        />
+                        <button
+                            type="submit"
+                            className="bg-primary text-white font-bold py-3 px-8 rounded-full hover:bg-secondary transition-transform transform hover:scale-105"
+                        >
+                            Verify
+                        </button>
+                    </form>
                 </div>
             </section>
 

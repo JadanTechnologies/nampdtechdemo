@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useSettings } from '../context/SettingsContext';
 import { getChannels, getMessages, addMessage, getMembers, updateMember, startOnlineStatusSimulator, stopOnlineStatusSimulator } from '../services/mockApi';
@@ -70,6 +70,22 @@ const CommunityHubPage: React.FC = () => {
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
+    
+    const membersInCurrentChannel = useMemo(() => {
+        return members
+            .filter(m => m.state === currentChannel || currentChannel === 'General')
+            .sort((a, b) => {
+                // Online users first
+                if (a.isOnline && !b.isOnline) return -1;
+                if (!a.isOnline && b.isOnline) return 1;
+                // Then sort by name
+                return a.fullName.localeCompare(b.fullName);
+            });
+    }, [members, currentChannel]);
+
+    const onlineCount = useMemo(() => {
+        return membersInCurrentChannel.filter(m => m.isOnline).length;
+    }, [membersInCurrentChannel]);
 
     const handleSendMessage = async () => {
         if (!newMessage.trim() || !user || !user.memberDetails) return;
@@ -177,9 +193,12 @@ const CommunityHubPage: React.FC = () => {
 
                 {/* Members List */}
                  <aside className="w-72 bg-light border-l overflow-y-auto">
-                    <div className="p-4 font-bold text-dark">Members in #{currentChannel}</div>
+                    <div className="p-4 font-bold text-dark">
+                        Members in #{currentChannel}
+                        <span className="text-sm font-normal text-green-600 ml-2">({onlineCount} online)</span>
+                    </div>
                      <ul>
-                        {members.filter(m => m.state === currentChannel || currentChannel === 'General').map(member => (
+                        {membersInCurrentChannel.map(member => (
                              <li key={member.id} className="px-4 py-2 hover:bg-gray-200 flex justify-between items-center group">
                                <div className="flex items-center gap-2">
                                    <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${member.isOnline ? 'bg-green-500' : 'bg-gray-400'}`} title={member.isOnline ? 'Online' : 'Offline'}></span>
