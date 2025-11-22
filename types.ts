@@ -150,9 +150,26 @@ export interface MaintenanceSettings {
     endTime: string;
 }
 
+export interface ConferenceSettings {
+    provider: 'agora' | 'zego' | 'none';
+}
+
 export interface ApiKeySettings {
+    // Communication
     twilioSid: string;
     twilioAuthToken: string;
     resendApiKey: string;
     firebaseApiKey: string;
+    // Conference
+    agoraAppId: string;
+    agoraAppCert: string;
+    zegoAppId: string;
+    zegoServerSecret: string;
+    // Payments
+    paystackPublicKey: string;
+    paystackSecretKey: string;
+    flutterwavePublicKey: string;
+    flutterwaveSecretKey: string;
+    monnifyApiKey: string;
+    monnifyContractCode: string;
 }

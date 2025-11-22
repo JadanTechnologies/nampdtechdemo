@@ -25,15 +25,16 @@ const SettingsPage: React.FC = () => {
       
       const setForm = form === 'branding' ? setBrandingForm : setSettingsForm as any;
 
-      if (keys.length === 2) {
-          const [parent, child] = keys;
-          setForm((prev: any) => ({
-              ...prev,
-              [parent]: { ...prev[parent], [child]: value }
-          }));
-      } else {
-          setForm((prev: any) => ({...prev, [name]: value }));
-      }
+      setForm((prev: any) => {
+          if (keys.length === 2) {
+              const [parent, child] = keys;
+              return {
+                  ...prev,
+                  [parent]: { ...prev[parent], [child]: value }
+              };
+          }
+          return {...prev, [name]: value };
+      });
   }
   
   const handleToggleChange = (e: React.ChangeEvent<HTMLInputElement>, form: 'branding' | 'settings') => {
@@ -41,15 +42,13 @@ const SettingsPage: React.FC = () => {
     const keys = name.split('.');
     const setForm = form === 'branding' ? setBrandingForm : setSettingsForm as any;
 
-     if (keys.length === 2) {
-          const [parent, child] = keys;
-          setForm((prev: any) => ({
-              ...prev,
-              [parent]: { ...prev[parent], [child]: checked }
-          }));
-      } else {
-          setForm((prev: any) => ({...prev, [name]: checked }));
-      }
+    setForm((prev: any) => {
+        if (keys.length === 2) {
+            const [parent, child] = keys;
+            return { ...prev, [parent]: { ...prev[parent], [child]: checked } };
+        }
+        return { ...prev, [name]: checked };
+    });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof Branding) => {
@@ -132,40 +131,130 @@ const SettingsPage: React.FC = () => {
 
             {/* API Integrations */}
             <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">API Integrations</h2>
-                <form onSubmit={(e) => handleSave(e, 'settings', 'API keys saved!')} className="space-y-4">
-                    <h3 className="font-semibold text-gray-600">Twilio (SMS)</h3>
-                     <div>
-                        <label htmlFor="apiKeys.twilioSid" className="block text-sm font-medium text-gray-700">Account SID</label>
-                        <input type="password" name="apiKeys.twilioSid" id="apiKeys.twilioSid" value={settingsForm.apiKeys.twilioSid} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-                    </div>
-                     <div>
-                        <label htmlFor="apiKeys.twilioAuthToken" className="block text-sm font-medium text-gray-700">Auth Token</label>
-                        <input type="password" name="apiKeys.twilioAuthToken" id="apiKeys.twilioAuthToken" value={settingsForm.apiKeys.twilioAuthToken} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-                    </div>
-                    <hr/>
-                    <h3 className="font-semibold text-gray-600">Resend (Email)</h3>
-                     <div>
-                        <label htmlFor="apiKeys.resendApiKey" className="block text-sm font-medium text-gray-700">API Key</label>
-                        <input type="password" name="apiKeys.resendApiKey" id="apiKeys.resendApiKey" value={settingsForm.apiKeys.resendApiKey} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-                    </div>
-                     <hr/>
-                     <h3 className="font-semibold text-gray-600">Firebase (Push Notifications)</h3>
-                     <div>
-                        <label htmlFor="apiKeys.firebaseApiKey" className="block text-sm font-medium text-gray-700">API Key</label>
-                        <input type="password" name="apiKeys.firebaseApiKey" id="apiKeys.firebaseApiKey" value={settingsForm.apiKeys.firebaseApiKey} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-                    </div>
-                     <button type="submit" className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">Save API Keys</button>
+                <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">API Keys & Integrations</h2>
+                <form onSubmit={(e) => handleSave(e, 'settings', 'API keys saved!')} className="space-y-6">
+                    {/* Communication */}
+                    <fieldset className="border-t pt-4">
+                        <legend className="text-lg font-semibold text-gray-700 mb-2">Communication</legend>
+                        <div className="space-y-4">
+                            <h3 className="font-medium text-gray-600">Twilio (SMS)</h3>
+                             <div>
+                                <label htmlFor="apiKeys.twilioSid" className="block text-sm font-medium text-gray-700">Account SID</label>
+                                <input type="password" name="apiKeys.twilioSid" id="apiKeys.twilioSid" value={settingsForm.apiKeys.twilioSid} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                            </div>
+                             <div>
+                                <label htmlFor="apiKeys.twilioAuthToken" className="block text-sm font-medium text-gray-700">Auth Token</label>
+                                <input type="password" name="apiKeys.twilioAuthToken" id="apiKeys.twilioAuthToken" value={settingsForm.apiKeys.twilioAuthToken} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                            </div>
+                            <h3 className="font-medium text-gray-600">Resend (Email)</h3>
+                             <div>
+                                <label htmlFor="apiKeys.resendApiKey" className="block text-sm font-medium text-gray-700">API Key</label>
+                                <input type="password" name="apiKeys.resendApiKey" id="apiKeys.resendApiKey" value={settingsForm.apiKeys.resendApiKey} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                            </div>
+                        </div>
+                    </fieldset>
+                    
+                    {/* Conference */}
+                    <fieldset className="border-t pt-4">
+                         <legend className="text-lg font-semibold text-gray-700 mb-2">Conference Provider</legend>
+                         <div className="flex gap-4 mb-4">
+                            {(['agora', 'zego', 'none'] as const).map(provider => (
+                                <label key={provider} className="flex items-center gap-2">
+                                    <input type="radio" name="conference.provider" value={provider} checked={settingsForm.conference.provider === provider} onChange={(e) => handleInputChange(e, 'settings')} />
+                                    <span className="capitalize">{provider}</span>
+                                </label>
+                            ))}
+                         </div>
+                         {settingsForm.conference.provider === 'agora' && (
+                             <div className="space-y-4 p-4 border rounded-md bg-gray-50">
+                                <h3 className="font-medium text-gray-600">Agora Keys</h3>
+                                <div>
+                                    <label htmlFor="apiKeys.agoraAppId" className="block text-sm font-medium text-gray-700">App ID</label>
+                                    <input type="password" name="apiKeys.agoraAppId" id="apiKeys.agoraAppId" value={settingsForm.apiKeys.agoraAppId} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                                </div>
+                                <div>
+                                    <label htmlFor="apiKeys.agoraAppCert" className="block text-sm font-medium text-gray-700">App Certificate</label>
+                                    <input type="password" name="apiKeys.agoraAppCert" id="apiKeys.agoraAppCert" value={settingsForm.apiKeys.agoraAppCert} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                                </div>
+                             </div>
+                         )}
+                         {settingsForm.conference.provider === 'zego' && (
+                             <div className="space-y-4 p-4 border rounded-md bg-gray-50">
+                                <h3 className="font-medium text-gray-600">ZegoCloud Keys</h3>
+                                <div>
+                                    <label htmlFor="apiKeys.zegoAppId" className="block text-sm font-medium text-gray-700">App ID</label>
+                                    <input type="password" name="apiKeys.zegoAppId" id="apiKeys.zegoAppId" value={settingsForm.apiKeys.zegoAppId} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                                </div>
+                                <div>
+                                    <label htmlFor="apiKeys.zegoServerSecret" className="block text-sm font-medium text-gray-700">Server Secret</label>
+                                    <input type="password" name="apiKeys.zegoServerSecret" id="apiKeys.zegoServerSecret" value={settingsForm.apiKeys.zegoServerSecret} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                                </div>
+                             </div>
+                         )}
+                    </fieldset>
+
+                    {/* Payment Gateways */}
+                    <fieldset className="border-t pt-4">
+                        <legend className="text-lg font-semibold text-gray-700 mb-2">Payment Gateways</legend>
+                        <div className="space-y-4">
+                            {/* Paystack */}
+                            <div className="space-y-2 p-4 border rounded-md bg-gray-50">
+                                <h3 className="font-medium text-gray-600">Paystack</h3>
+                                <div>
+                                    <label htmlFor="apiKeys.paystackPublicKey" className="block text-sm font-medium text-gray-700">Public Key</label>
+                                    <input type="password" name="apiKeys.paystackPublicKey" id="apiKeys.paystackPublicKey" value={settingsForm.apiKeys.paystackPublicKey} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                                </div>
+                                 <div>
+                                    <label htmlFor="apiKeys.paystackSecretKey" className="block text-sm font-medium text-gray-700">Secret Key</label>
+                                    <input type="password" name="apiKeys.paystackSecretKey" id="apiKeys.paystackSecretKey" value={settingsForm.apiKeys.paystackSecretKey} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                                </div>
+                            </div>
+                             {/* Flutterwave */}
+                             <div className="space-y-2 p-4 border rounded-md bg-gray-50">
+                                <h3 className="font-medium text-gray-600">Flutterwave</h3>
+                                <div>
+                                    <label htmlFor="apiKeys.flutterwavePublicKey" className="block text-sm font-medium text-gray-700">Public Key</label>
+                                    <input type="password" name="apiKeys.flutterwavePublicKey" id="apiKeys.flutterwavePublicKey" value={settingsForm.apiKeys.flutterwavePublicKey} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                                </div>
+                                 <div>
+                                    <label htmlFor="apiKeys.flutterwaveSecretKey" className="block text-sm font-medium text-gray-700">Secret Key</label>
+                                    <input type="password" name="apiKeys.flutterwaveSecretKey" id="apiKeys.flutterwaveSecretKey" value={settingsForm.apiKeys.flutterwaveSecretKey} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                                </div>
+                            </div>
+                            {/* Monnify */}
+                             <div className="space-y-2 p-4 border rounded-md bg-gray-50">
+                                <h3 className="font-medium text-gray-600">Monnify</h3>
+                                <div>
+                                    <label htmlFor="apiKeys.monnifyApiKey" className="block text-sm font-medium text-gray-700">API Key</label>
+                                    <input type="password" name="apiKeys.monnifyApiKey" id="apiKeys.monnifyApiKey" value={settingsForm.apiKeys.monnifyApiKey} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                                </div>
+                                 <div>
+                                    <label htmlFor="apiKeys.monnifyContractCode" className="block text-sm font-medium text-gray-700">Contract Code</label>
+                                    <input type="password" name="apiKeys.monnifyContractCode" id="apiKeys.monnifyContractCode" value={settingsForm.apiKeys.monnifyContractCode} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    
+                    <button type="submit" className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">Save API Keys</button>
                 </form>
             </div>
 
             {/* Payment Gateway Settings */}
             <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">Payment Gateways</h2>
+                <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">Payment Gateway Settings</h2>
                 <form onSubmit={(e) => handleSave(e, 'settings', 'Payment settings saved!')} className="space-y-4">
                     <div className="flex items-center justify-between">
                         <label className="font-medium text-gray-700">Enable Paystack</label>
                         <input type="checkbox" name="paymentGateways.paystackEnabled" checked={settingsForm.paymentGateways.paystackEnabled} onChange={(e) => handleToggleChange(e, 'settings')} />
+                    </div>
+                     <div className="flex items-center justify-between">
+                        <label className="font-medium text-gray-700">Enable Flutterwave</label>
+                        <input type="checkbox" name="paymentGateways.flutterwaveEnabled" checked={settingsForm.paymentGateways.flutterwaveEnabled} onChange={(e) => handleToggleChange(e, 'settings')} />
+                    </div>
+                     <div className="flex items-center justify-between">
+                        <label className="font-medium text-gray-700">Enable Monnify</label>
+                        <input type="checkbox" name="paymentGateways.monnifyEnabled" checked={settingsForm.paymentGateways.monnifyEnabled} onChange={(e) => handleToggleChange(e, 'settings')} />
                     </div>
                      <div>
                         <label htmlFor="manualInstructions" className="block text-sm font-medium text-gray-700">Manual Payment Instructions</label>

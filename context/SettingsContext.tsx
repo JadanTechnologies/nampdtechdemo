@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
-import { MaintenanceSettings, ApiKeySettings } from '../types';
+import { MaintenanceSettings, ApiKeySettings, ConferenceSettings } from '../types';
 
 export interface PaymentGatewaySettings {
   paystackEnabled: boolean;
@@ -12,6 +12,7 @@ export interface Settings {
   paymentGateways: PaymentGatewaySettings;
   maintenanceMode: MaintenanceSettings;
   apiKeys: ApiKeySettings;
+  conference: ConferenceSettings;
 }
 
 interface SettingsContextType {
@@ -39,6 +40,19 @@ const defaultSettings: Settings = {
         twilioAuthToken: '',
         resendApiKey: '',
         firebaseApiKey: '',
+        agoraAppId: '',
+        agoraAppCert: '',
+        zegoAppId: '',
+        zegoServerSecret: '',
+        paystackPublicKey: '',
+        paystackSecretKey: '',
+        flutterwavePublicKey: '',
+        flutterwaveSecretKey: '',
+        monnifyApiKey: '',
+        monnifyContractCode: '',
+    },
+    conference: {
+        provider: 'none'
     }
 };
 
@@ -60,6 +74,7 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
           paymentGateways: { ...prev.paymentGateways, ...parsedSettings.paymentGateways },
           maintenanceMode: { ...prev.maintenanceMode, ...parsedSettings.maintenanceMode },
           apiKeys: { ...prev.apiKeys, ...parsedSettings.apiKeys },
+          conference: { ...prev.conference, ...parsedSettings.conference },
         }));
       } else {
         localStorage.setItem('nampdtech-settings', JSON.stringify(defaultSettings));

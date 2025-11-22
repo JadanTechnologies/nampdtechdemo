@@ -1,22 +1,32 @@
-
 import React, { useState } from 'react';
+import { useSettings } from '../context/SettingsContext';
+import { Link } from 'react-router-dom';
 
-type ConferenceProvider = 'agora' | 'zego';
 type ConferenceStatus = 'idle' | 'active';
 
 const ConferencePage: React.FC = () => {
-    const [provider, setProvider] = useState<ConferenceProvider>('agora');
+    const { settings } = useSettings();
     const [status, setStatus] = useState<ConferenceStatus>('idle');
     
     const handleStartConference = () => {
         // In a real app, this would initialize the selected SDK
-        console.log(`Starting conference with ${provider}...`);
+        console.log(`Starting conference with ${settings.conference.provider}...`);
         setStatus('active');
     };
     
     const handleEndConference = () => {
         console.log(`Ending conference.`);
         setStatus('idle');
+    };
+    
+    const isConfigured = () => {
+        if (settings.conference.provider === 'agora') {
+            return settings.apiKeys.agoraAppId && settings.apiKeys.agoraAppCert;
+        }
+        if (settings.conference.provider === 'zego') {
+            return settings.apiKeys.zegoAppId && settings.apiKeys.zegoServerSecret;
+        }
+        return false;
     };
 
     const renderIdleState = () => (
@@ -29,28 +39,33 @@ const ConferencePage: React.FC = () => {
                 </div>
             </div>
             <h2 className="text-2xl font-semibold text-dark mb-4">Virtual Conference Room</h2>
-             <div className="max-w-md mx-auto my-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Select Conference Provider</label>
-                <div className="grid grid-cols-2 gap-4">
-                    <label className={`block p-4 border rounded-lg text-center cursor-pointer ${provider === 'agora' ? 'border-primary ring-2 ring-primary' : 'border-gray-300'}`}>
-                        <input type="radio" name="provider" value="agora" checked={provider === 'agora'} onChange={() => setProvider('agora')} className="sr-only"/>
-                        <span className="font-semibold">Agora</span>
-                    </label>
-                    <label className={`block p-4 border rounded-lg text-center cursor-pointer ${provider === 'zego' ? 'border-primary ring-2 ring-primary' : 'border-gray-300'}`}>
-                        <input type="radio" name="provider" value="zego" checked={provider === 'zego'} onChange={() => setProvider('zego')} className="sr-only"/>
-                        <span className="font-semibold">ZegoCloud</span>
-                    </label>
+            
+            {isConfigured() ? (
+                <>
+                    <p className="text-gray-600">
+                        Active Provider: <span className="font-bold capitalize text-primary">{settings.conference.provider}</span>
+                    </p>
+                    <p className="text-gray-600 max-w-lg mx-auto my-8">
+                        Host live video conferences with members, chairmen, or state admins for real-time meetings, training sessions, and announcements.
+                    </p>
+                    <button 
+                        onClick={handleStartConference}
+                        className="bg-accent text-primary font-bold py-3 px-8 rounded-md hover:opacity-90 transition"
+                    >
+                        Start New Conference
+                    </button>
+                </>
+            ) : (
+                <div className="max-w-md mx-auto my-6 p-4 bg-yellow-50 border border-yellow-300 rounded-md">
+                    <h3 className="font-semibold text-yellow-800">Conference Provider Not Configured</h3>
+                    <p className="text-sm text-yellow-700 mt-1">
+                        Please select a conference provider and enter the necessary API keys in the settings page to enable this feature.
+                    </p>
+                    <Link to="/settings" className="mt-3 inline-block bg-primary text-white text-sm py-2 px-4 rounded-md hover:bg-secondary transition">
+                        Go to Settings
+                    </Link>
                 </div>
-            </div>
-            <p className="text-gray-600 max-w-lg mx-auto mb-8">
-                Host live video conferences with members, chairmen, or state admins for real-time meetings, training sessions, and announcements.
-            </p>
-            <button 
-                onClick={handleStartConference}
-                className="bg-accent text-primary font-bold py-3 px-8 rounded-md hover:opacity-90 transition"
-            >
-                Start New Conference
-            </button>
+            )}
         </div>
     );
     
@@ -58,7 +73,7 @@ const ConferencePage: React.FC = () => {
          <div className="bg-black p-8 rounded-lg shadow-lg text-center aspect-video flex flex-col justify-between items-center text-white">
             <div>
                  <p className="text-lg font-semibold">Conference in Progress</p>
-                 <p className="text-sm opacity-80">Using: <span className="capitalize font-bold">{provider}</span></p>
+                 <p className="text-sm opacity-80">Using: <span className="capitalize font-bold">{settings.conference.provider}</span></p>
             </div>
             <div>
                 {/* Placeholder for video feeds */}
