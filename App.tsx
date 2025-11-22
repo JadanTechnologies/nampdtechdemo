@@ -3,6 +3,8 @@ import React, { useEffect } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { BrandingProvider, useBranding } from './context/BrandingContext';
+import { SettingsProvider } from './context/SettingsContext';
+import { GeminiProvider } from './context/GeminiContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -17,6 +19,7 @@ import CertificatePage from './pages/CertificatePage';
 import PaymentsPage from './pages/PaymentsPage';
 import LandingPage from './pages/LandingPage';
 import SettingsPage from './pages/SettingsPage';
+import PaymentApprovalsPage from './pages/PaymentApprovalsPage';
 import { UserRole } from './types';
 
 // Component to handle dynamic favicon updates
@@ -37,37 +40,49 @@ const FaviconUpdater: React.FC = () => {
 function App() {
   return (
     <AuthProvider>
-      <BrandingProvider>
-        <FaviconUpdater />
-        <HashRouter>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            
-            <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/approvals" element={<ApprovalsPage />} />
-              <Route path="/members" element={<MembersPage />} />
-              <Route path="/financials" element={<FinancialsPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/id-card" element={<IdCardPage />} />
-              <Route path="/certificate" element={<CertificatePage />} />
-              <Route path="/payments" element={<PaymentsPage />} />
-              <Route 
-                path="/settings" 
-                element={
-                  <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
-                    <SettingsPage />
-                  </ProtectedRoute>
-                } 
-              />
-            </Route>
-            
-             <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </HashRouter>
-      </BrandingProvider>
+      <SettingsProvider>
+        <GeminiProvider>
+          <BrandingProvider>
+            <FaviconUpdater />
+            <HashRouter>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                
+                <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                  <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/approvals" element={<ApprovalsPage />} />
+                   <Route 
+                    path="/payment-approvals" 
+                    element={
+                      <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
+                        <PaymentApprovalsPage />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route path="/members" element={<MembersPage />} />
+                  <Route path="/financials" element={<FinancialsPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/id-card" element={<IdCardPage />} />
+                  <Route path="/certificate" element={<CertificatePage />} />
+                  <Route path="/payments" element={<PaymentsPage />} />
+                  <Route 
+                    path="/settings" 
+                    element={
+                      <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
+                        <SettingsPage />
+                      </ProtectedRoute>
+                    } 
+                  />
+                </Route>
+                
+                 <Route path="*" element={<Navigate to="/" />} />
+              </Routes>
+            </HashRouter>
+          </BrandingProvider>
+        </GeminiProvider>
+      </SettingsProvider>
     </AuthProvider>
   );
 }

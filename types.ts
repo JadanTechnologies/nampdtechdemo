@@ -6,10 +6,24 @@ export enum UserRole {
   MEMBER = 'Member',
 }
 
+export enum PaymentGateway {
+  PAYSTACK = 'Paystack',
+  MONNIFY = 'Monnify',
+  FLUTTERWAVE = 'Flutterwave',
+  MANUAL = 'Manual Bank Transfer',
+}
+
+export enum PaymentStatus {
+  PENDING_CONFIRMATION = 'Pending Confirmation',
+  PAID = 'Paid',
+  REJECTED = 'Rejected',
+}
+
 export enum MembershipStatus {
   PENDING_CHAIRMAN = 'Pending Chairman Approval',
   PENDING_STATE = 'Pending State Admin Approval',
   PENDING_PAYMENT = 'Pending Payment',
+  PENDING_MANUAL_PAYMENT_CONFIRMATION = 'Pending Manual Payment Confirmation',
   ACTIVE = 'Active',
   REJECTED = 'Rejected',
 }
@@ -48,7 +62,9 @@ export interface Payment {
   amount: number;
   type: 'Registration Fee' | 'Annual Dues';
   date: string;
-  status: 'Paid';
+  status: PaymentStatus;
+  gateway: PaymentGateway;
+  paymentProofUrl?: string;
 }
 
 export interface FileUpload {

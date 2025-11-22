@@ -1,15 +1,13 @@
 
 import React, { useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MembershipStatus } from '../../types';
 import Spinner from '../ui/Spinner';
-import { addPayment, getPaymentsByMemberId } from '../../services/mockApi';
-import { updateMember } from '../../services/mockApi';
 
 const MemberDashboard: React.FC = () => {
   const { user, updateUserMemberDetails } = useAuth();
-  const [isPaying, setIsPaying] = React.useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Refresh user details on mount to get latest status
@@ -22,16 +20,6 @@ const MemberDashboard: React.FC = () => {
   }
 
   const { memberDetails } = user;
-  
-  const handlePayment = async () => {
-    if (!memberDetails) return;
-    setIsPaying(true);
-    await addPayment(memberDetails, 'Registration Fee', 10000);
-    await addPayment(memberDetails, 'Annual Dues', 5000);
-    await updateMember(memberDetails.id, { status: MembershipStatus.ACTIVE });
-    await updateUserMemberDetails();
-    setIsPaying(false);
-  }
 
   const StatusCard = ({ status, message, action }: { status: string, message: string, action?: React.ReactNode }) => (
     <div className="bg-white p-8 rounded-lg shadow-lg text-center">
@@ -54,14 +42,15 @@ const MemberDashboard: React.FC = () => {
                     message="Congratulations! Your application has been approved. Please complete your registration by paying the required fees."
                     action={
                         <button 
-                            onClick={handlePayment}
-                            disabled={isPaying}
+                            onClick={() => navigate('/payments')}
                             className="bg-accent text-primary font-bold py-3 px-8 rounded-md hover:opacity-90 transition inline-flex items-center gap-2"
                         >
-                            {isPaying ? <><Spinner size="sm"/> Processing...</> : 'Pay Registration Fee (₦15,000)'}
+                           Make Payment (₦15,000)
                         </button>
                     }
                 />;
+      case MembershipStatus.PENDING_MANUAL_PAYMENT_CONFIRMATION:
+         return <StatusCard status="Payment Under Review" message="We have received your payment submission. It is currently being reviewed by our administrators. You will be notified once it's confirmed." />;
       case MembershipStatus.ACTIVE:
         return (
           <div className="bg-white p-8 rounded-lg shadow-lg text-center">

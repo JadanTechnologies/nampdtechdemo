@@ -1,30 +1,25 @@
 
 import React, { useState, useEffect } from 'react';
+import { useSettings, Settings } from '../context/SettingsContext';
 import { MOCK_USERS } from '../constants';
 import { UserRole } from '../types';
 import { useBranding, Branding } from '../context/BrandingContext';
 
 const SettingsPage: React.FC = () => {
   const { branding, updateBranding } = useBranding();
-  
-  const [systemSettings, setSystemSettings] = useState({
-    enableRegistrations: true,
-    maintenanceMode: false,
-    registrationFee: 10000,
-  });
+  const { settings, updateSettings } = useSettings();
   
   const [brandingForm, setBrandingForm] = useState<Branding>(branding);
+  const [settingsForm, setSettingsForm] = useState<Settings>(settings);
   
   useEffect(() => {
-    // Sync local form state if context changes
     setBrandingForm(branding);
   }, [branding]);
-
-  const handleToggleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    setSystemSettings(prev => ({ ...prev, [name]: checked }));
-  };
   
+  useEffect(() => {
+    setSettingsForm(settings);
+  }, [settings]);
+
   const handleBrandingInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
       setBrandingForm(prev => ({...prev, [name]: value }));
@@ -50,6 +45,44 @@ const SettingsPage: React.FC = () => {
       e.preventDefault();
       updateBranding(brandingForm);
       alert('Branding settings saved!');
+  }
+
+  const handleSettingsInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = e.target;
+      const keys = name.split('.');
+      if (keys.length === 2) {
+          const [parent, child] = keys;
+          setSettingsForm(prev => ({
+              ...prev,
+              [parent]: {
+                  ...(prev as any)[parent],
+                  [child]: value,
+              }
+          }));
+      } else {
+        setSettingsForm(prev => ({...prev, [name]: value }));
+      }
+  }
+
+  const handleSettingsToggleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, checked } = e.target;
+      const keys = name.split('.');
+      if (keys.length === 2) {
+          const [parent, child] = keys;
+          setSettingsForm(prev => ({
+              ...prev,
+              [parent]: {
+                  ...(prev as any)[parent],
+                  [child]: checked,
+              }
+          }));
+      }
+  }
+
+  const handleSettingsSave = (e: React.FormEvent) => {
+      e.preventDefault();
+      updateSettings(settingsForm);
+      alert('Settings saved!');
   }
   
   const adminUsers = MOCK_USERS.filter(u => u.role !== UserRole.MEMBER);
@@ -90,7 +123,6 @@ const SettingsPage: React.FC = () => {
                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                     </label>
                 </div>
-
                  <div>
                     <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700">Contact Email</label>
                     <input type="email" name="contactEmail" id="contactEmail" value={brandingForm.contactEmail} onChange={handleBrandingInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
@@ -106,31 +138,44 @@ const SettingsPage: React.FC = () => {
                  <button type="submit" className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">Save Branding</button>
            </form>
         </div>
+        
+        <div className="space-y-8">
+            {/* API Settings */}
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+                <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">API Integrations</h2>
+                <form onSubmit={handleSettingsSave} className="space-y-4">
+                    <div>
+                        <label htmlFor="geminiApiKey" className="block text-sm font-medium text-gray-700">Google Gemini API Key</label>
+                        <input type="password" name="geminiApiKey" id="geminiApiKey" value={settingsForm.geminiApiKey || ''} onChange={handleSettingsInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                        <p className="text-xs text-gray-500 mt-1">This key is required for the NIN slip OCR feature.</p>
+                    </div>
+                    <button type="submit" className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">Save API Keys</button>
+                </form>
+            </div>
 
-        {/* System Configuration */}
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">System Configuration</h2>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <label htmlFor="enableRegistrations" className="font-medium text-gray-700">Enable New Registrations</label>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" id="enableRegistrations" name="enableRegistrations" className="sr-only peer" checked={systemSettings.enableRegistrations} onChange={handleToggleChange} />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-              </label>
+            {/* Payment Gateway Settings */}
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+                <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">Payment Gateways</h2>
+                <form onSubmit={handleSettingsSave} className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <label className="font-medium text-gray-700">Enable Paystack</label>
+                        <input type="checkbox" name="paymentGateways.paystackEnabled" className="toggle" checked={settingsForm.paymentGateways.paystackEnabled} onChange={handleSettingsToggleChange} />
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <label className="font-medium text-gray-700">Enable Monnify</label>
+                        <input type="checkbox" name="paymentGateways.monnifyEnabled" className="toggle" checked={settingsForm.paymentGateways.monnifyEnabled} onChange={handleSettingsToggleChange} />
+                    </div>
+                     <div className="flex items-center justify-between">
+                        <label className="font-medium text-gray-700">Enable Flutterwave</label>
+                        <input type="checkbox" name="paymentGateways.flutterwaveEnabled" className="toggle" checked={settingsForm.paymentGateways.flutterwaveEnabled} onChange={handleSettingsToggleChange} />
+                    </div>
+                    <div>
+                        <label htmlFor="manualInstructions" className="block text-sm font-medium text-gray-700">Manual Payment Instructions</label>
+                        <textarea name="paymentGateways.manualPaymentInstructions" id="manualInstructions" value={settingsForm.paymentGateways.manualPaymentInstructions} onChange={handleSettingsInputChange} rows={5} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                    </div>
+                    <button type="submit" className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">Save Payment Settings</button>
+                </form>
             </div>
-            <div className="flex items-center justify-between">
-              <label htmlFor="maintenanceMode" className="font-medium text-gray-700">Enable Maintenance Mode</label>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" id="maintenanceMode" name="maintenanceMode" className="sr-only peer" checked={systemSettings.maintenanceMode} onChange={handleToggleChange} />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-              </label>
-            </div>
-            <div>
-              <label htmlFor="registrationFee" className="block text-sm font-medium text-gray-700">Registration Fee (₦)</label>
-              <input type="number" name="registrationFee" id="registrationFee" value={systemSettings.registrationFee} onChange={(e) => setSystemSettings(prev => ({...prev, registrationFee: parseInt(e.target.value)}))} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-            </div>
-             <button className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">Save Configuration</button>
-          </div>
         </div>
         
         {/* Manage Admins */}

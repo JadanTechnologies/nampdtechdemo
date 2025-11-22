@@ -1,5 +1,5 @@
 
-import { User, UserRole, MemberApplication, MembershipStatus, Payment } from './types';
+import { User, UserRole, MemberApplication, MembershipStatus, Payment, PaymentStatus, PaymentGateway } from './types';
 
 export const NIGERIAN_STATES = [
   "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno",
@@ -37,8 +37,8 @@ export const MOCK_USERS: User[] = [
 export const MOCK_MEMBERS: MemberApplication[] = createInitialMembers();
 
 export const MOCK_PAYMENTS: Payment[] = [
-    { id: 'pay-001', memberId: 'mem-001', memberName: 'Bisi Adekunle', state: 'Lagos', amount: 10000, type: 'Registration Fee', date: new Date(new Date().setDate(new Date().getDate() - 29)).toISOString(), status: 'Paid' },
-    { id: 'pay-002', memberId: 'mem-001', memberName: 'Bisi Adekunle', state: 'Lagos', amount: 5000, type: 'Annual Dues', date: new Date(new Date().setDate(new Date().getDate() - 29)).toISOString(), status: 'Paid' },
-    { id: 'pay-003', memberId: 'mem-006', memberName: 'Musa Ibrahim', state: 'Kaduna', amount: 10000, type: 'Registration Fee', date: new Date(new Date().setDate(new Date().getDate() - 59)).toISOString(), status: 'Paid' },
-    { id: 'pay-004', memberId: 'mem-006', memberName: 'Musa Ibrahim', state: 'Kaduna', amount: 5000, type: 'Annual Dues', date: new Date(new Date().setDate(new Date().getDate() - 59)).toISOString(), status: 'Paid' },
+    { id: 'pay-001', memberId: 'mem-001', memberName: 'Bisi Adekunle', state: 'Lagos', amount: 10000, type: 'Registration Fee', date: new Date(new Date().setDate(new Date().getDate() - 29)).toISOString(), status: PaymentStatus.PAID, gateway: PaymentGateway.PAYSTACK },
+    { id: 'pay-002', memberId: 'mem-001', memberName: 'Bisi Adekunle', state: 'Lagos', amount: 5000, type: 'Annual Dues', date: new Date(new Date().setDate(new Date().getDate() - 29)).toISOString(), status: PaymentStatus.PAID, gateway: PaymentGateway.PAYSTACK },
+    { id: 'pay-003', memberId: 'mem-006', memberName: 'Musa Ibrahim', state: 'Kaduna', amount: 10000, type: 'Registration Fee', date: new Date(new Date().setDate(new Date().getDate() - 59)).toISOString(), status: PaymentStatus.PAID, gateway: PaymentGateway.MANUAL },
+    { id: 'pay-004', memberId: 'mem-006', memberName: 'Musa Ibrahim', state: 'Kaduna', amount: 5000, type: 'Annual Dues', date: new Date(new Date().setDate(new Date().getDate() - 59)).toISOString(), status: PaymentStatus.PAID, gateway: PaymentGateway.MANUAL },
 ];

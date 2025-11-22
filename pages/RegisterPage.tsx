@@ -6,7 +6,7 @@ import FileUpload from '../components/registration/FileUpload';
 import { performOcrOnNin } from '../services/geminiService';
 import { addMember } from '../services/mockApi';
 import Spinner from '../components/ui/Spinner';
-import { UserRole } from '../types';
+import { useGemini } from '../context/GeminiContext';
 
 const steps = ['Personal Information', 'Business Details', 'Document Upload'];
 
@@ -32,6 +32,7 @@ const RegisterPage: React.FC = () => {
   const [ocrError, setOcrError] = useState('');
   const [submitError, setSubmitError] = useState('');
   const navigate = useNavigate();
+  const { ai, isGeminiAvailable } = useGemini();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -48,9 +49,12 @@ const RegisterPage: React.FC = () => {
   const handleOcr = async (file: File) => {
     setIsOcrLoading(true);
     setOcrError('');
+    if (!isGeminiAvailable) {
+        setOcrError('OCR service is not configured. Please enter details manually.');
+    }
     try {
-      const result = await performOcrOnNin(file);
-      if (result) {
+      const result = await performOcrOnNin(file, ai);
+      if (result && result.fullName && result.nin) {
         setFormData(prev => ({ ...prev, fullName: result.fullName, nin: result.nin }));
       } else {
         setOcrError('Could not extract information. Please enter manually.');
