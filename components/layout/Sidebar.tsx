@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -7,9 +6,11 @@ import { UserRole, MembershipStatus } from '../../types';
 interface SidebarProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
+  sidebarExpanded: boolean;
+  setSidebarExpanded: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
+const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, sidebarExpanded, setSidebarExpanded }) => {
   const location = useLocation();
   const { pathname } = location;
   const { user } = useAuth();
@@ -87,7 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
       <div
         id="sidebar"
         ref={sidebar}
-        className={`flex flex-col absolute z-40 left-0 top-0 lg:static lg:left-auto lg:top-auto lg:translate-x-0 transform h-screen overflow-y-scroll lg:overflow-y-auto no-scrollbar w-64 lg:w-20 lg:sidebar-expanded:w-64 2xl:w-64 shrink-0 bg-primary p-4 transition-all duration-200 ease-in-out ${
+        className={`flex flex-col absolute z-40 left-0 top-0 lg:static lg:left-auto lg:top-auto lg:translate-x-0 transform h-screen overflow-y-scroll lg:overflow-y-auto no-scrollbar w-64 ${sidebarExpanded ? 'lg:w-64' : 'lg:w-20'} 2xl:w-64 shrink-0 bg-primary p-4 transition-all duration-200 ease-in-out ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-64'
         }`}
       >
@@ -127,7 +128,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                       <svg className="shrink-0 h-6 w-6" viewBox="0 0 24 24">
                         <path className={`fill-current text-gray-400 ${pathname.startsWith(to) && 'text-accent'}`} d={icon} />
                       </svg>
-                      <span className="text-sm font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">{label}</span>
+                      <span className={`text-sm font-medium ml-3 ${sidebarExpanded ? 'lg:opacity-100' : 'lg:opacity-0'} 2xl:opacity-100 duration-200`}>{label}</span>
                     </div>
                   </NavLink>
                 </li>
@@ -135,6 +136,23 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             </ul>
           </div>
         </div>
+
+        {/* Expand / collapse button */}
+        <div className="pt-3 hidden lg:inline-flex 2xl:hidden justify-end mt-auto">
+            <div className="px-3 py-2">
+                <button onClick={setSidebarExpanded} className="p-2 rounded hover:bg-secondary">
+                    <span className="sr-only">Expand / collapse sidebar</span>
+                     <svg className="w-6 h-6 text-gray-300" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        {sidebarExpanded ? (
+                             <path d="M11 19L4 12L11 5M18 19L11 12L18 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        ) : (
+                            <path d="M13 5L20 12L13 19M6 5L13 12L6 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        )}
+                    </svg>
+                </button>
+            </div>
+        </div>
+
       </div>
     </div>
   );
