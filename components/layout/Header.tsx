@@ -2,18 +2,19 @@
 import React from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import NotificationBell from '../ui/NotificationBell';
+import ThemeToggle from '../ui/ThemeToggle';
 
 const Header: React.FC<{ sidebarOpen: boolean; setSidebarOpen: (open: boolean) => void }> = ({ sidebarOpen, setSidebarOpen }) => {
   const { user, logout } = useAuth();
 
   return (
-    <header className="sticky top-0 bg-white shadow-md z-30">
+    <header className="sticky top-0 bg-white dark:bg-gray-800 shadow-md dark:border-b dark:border-gray-700 z-30">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 -mb-px">
           {/* Hamburger button for mobile */}
           <div className="flex items-center">
             <button
-              className="text-gray-500 hover:text-gray-600 lg:hidden"
+              className="text-gray-500 hover:text-gray-600 dark:text-gray-400 lg:hidden"
               aria-controls="sidebar"
               aria-expanded={sidebarOpen}
               onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -28,14 +29,15 @@ const Header: React.FC<{ sidebarOpen: boolean; setSidebarOpen: (open: boolean) =
           </div>
 
           <div className="flex items-center space-x-4">
+            <ThemeToggle />
             <NotificationBell />
-            <div className="w-px h-6 bg-gray-200" />
+            <div className="w-px h-6 bg-gray-200 dark:bg-gray-600" />
             <div className="relative inline-flex" >
               <div className="flex items-center truncate">
                  <img className="w-8 h-8 rounded-full mr-2" src={`https://i.pravatar.cc/40?u=${user?.email}`} alt="Avatar" />
                  <div className="truncate">
-                    <span className="font-semibold text-sm text-gray-800 truncate">{user?.memberDetails?.fullName || user?.email}</span>
-                    <div className="text-xs text-gray-500">{user?.role}</div>
+                    <span className="font-semibold text-sm text-gray-800 dark:text-gray-200 truncate">{user?.memberDetails?.fullName || user?.email}</span>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">{user?.role}</div>
                  </div>
               </div>
             </div>

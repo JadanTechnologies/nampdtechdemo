@@ -32,10 +32,10 @@ const MemberDashboard: React.FC = () => {
   const { memberDetails } = user;
 
   const StatusCard = ({ status, message, action }: { status: string, message: string, action?: React.ReactNode }) => (
-    <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-      <p className="text-sm text-gray-500 mb-2">Your Membership Status</p>
+    <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg text-center">
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Your Membership Status</p>
       <h2 className="text-3xl font-bold text-primary mb-4">{status}</h2>
-      <p className="text-dark/80 mb-6 max-w-md mx-auto">{message}</p>
+      <p className="text-dark/80 dark:text-gray-300 mb-6 max-w-md mx-auto">{message}</p>
       {action}
     </div>
   );
@@ -63,13 +63,13 @@ const MemberDashboard: React.FC = () => {
          return <StatusCard status="Payment Under Review" message="We have received your payment submission. It is currently being reviewed by our administrators. You will be notified once it's confirmed." />;
       case MembershipStatus.ACTIVE:
         return (
-          <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+          <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg text-center">
             <h2 className="text-3xl font-bold text-green-600 mb-4">Welcome, {memberDetails.fullName}!</h2>
-            <p className="text-dark/80 mb-6 max-w-md mx-auto">Your membership is active. Explore your portal features below.</p>
+            <p className="text-dark/80 dark:text-gray-300 mb-6 max-w-md mx-auto">Your membership is active. Explore your portal features below.</p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link to="/id-card" className="bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">View Digital ID</Link>
               <Link to="/certificate" className="bg-secondary text-white py-2 px-4 rounded-md hover:bg-primary transition">Get Certificate</Link>
-              <Link to="/profile" className="bg-gray-200 text-dark py-2 px-4 rounded-md hover:bg-gray-300 transition">Manage Profile</Link>
+              <Link to="/profile" className="bg-gray-200 text-dark dark:bg-gray-700 dark:text-gray-200 py-2 px-4 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition">Manage Profile</Link>
             </div>
           </div>
         );
@@ -82,17 +82,17 @@ const MemberDashboard: React.FC = () => {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-dark mb-6">Member Dashboard</h1>
+      <h1 className="text-3xl font-bold text-dark dark:text-gray-100 mb-6">Member Dashboard</h1>
       {renderContent()}
 
       {announcements.length > 0 && (
           <div className="mt-8">
-              <h2 className="text-2xl font-bold text-dark mb-4">Recent Announcements</h2>
+              <h2 className="text-2xl font-bold text-dark dark:text-gray-100 mb-4">Recent Announcements</h2>
               <div className="space-y-4">
                   {announcements.map(comm => (
-                      <div key={comm.id} className="bg-white p-4 rounded-lg shadow-md border-l-4 border-secondary">
-                          <h3 className="font-bold text-dark">{comm.title}</h3>
-                          <p className="text-sm text-gray-600">{comm.content}</p>
+                      <div key={comm.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border-l-4 border-secondary">
+                          <h3 className="font-bold text-dark dark:text-gray-100">{comm.title}</h3>
+                          <p className="text-sm text-gray-600 dark:text-gray-300">{comm.content}</p>
                           <p className="text-xs text-gray-400 mt-2">Posted on {new Date(comm.date).toLocaleDateString()}</p>
                       </div>
                   ))}

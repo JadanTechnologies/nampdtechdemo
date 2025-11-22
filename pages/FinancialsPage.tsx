@@ -34,16 +34,16 @@ const FinancialsPage: React.FC = () => {
 
     return (
         <div>
-            <h1 className="text-3xl font-bold text-dark mb-6">Financial Overview</h1>
-            <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h1 className="text-3xl font-bold text-dark dark:text-gray-100 mb-6">Financial Overview</h1>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                   <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-md" role="alert">
+                   <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-md dark:bg-blue-900/50 dark:text-blue-300" role="alert">
                       <p className="font-bold">Total Revenue (Filtered)</p>
                       <p className="text-2xl">₦{totalRevenue.toLocaleString()}</p>
                     </div>
                    {user?.role === UserRole.SUPER_ADMIN && (
                        <select
-                         className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md"
+                         className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                          value={stateFilter}
                          onChange={e => setStateFilter(e.target.value)}
                        >
@@ -58,8 +58,8 @@ const FinancialsPage: React.FC = () => {
                     <div className="flex justify-center items-center h-64"><Spinner size="lg" /></div>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left text-gray-500">
-                             <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
                                     <th scope="col" className="px-6 py-3">Transaction ID</th>
                                     <th scope="col" className="px-6 py-3">Member Name</th>
@@ -71,9 +71,9 @@ const FinancialsPage: React.FC = () => {
                             </thead>
                             <tbody>
                                 {filteredPayments.map(payment => (
-                                    <tr key={payment.id} className="bg-white border-b hover:bg-gray-50">
+                                    <tr key={payment.id} className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                         <td className="px-6 py-4 font-mono text-xs">{payment.id}</td>
-                                        <td className="px-6 py-4 font-medium text-gray-900">{payment.memberName}</td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{payment.memberName}</td>
                                         <td className="px-6 py-4">{payment.state}</td>
                                         <td className="px-6 py-4">{payment.type}</td>
                                         <td className="px-6 py-4 font-semibold">₦{payment.amount.toLocaleString()}</td>
@@ -82,7 +82,7 @@ const FinancialsPage: React.FC = () => {
                                 ))}
                             </tbody>
                         </table>
-                        {filteredPayments.length === 0 && <p className="text-center py-8 text-gray-500">No transactions found.</p>}
+                        {filteredPayments.length === 0 && <p className="text-center py-8 text-gray-500 dark:text-gray-400">No transactions found.</p>}
                     </div>
                 )}
             </div>

@@ -16,9 +16,9 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, color = 'blue' }) => 
   };
 
   return (
-    <div className={`bg-white p-5 rounded-lg shadow-lg border-l-4 ${colors[color]}`}>
-      <p className="text-sm font-medium text-gray-500">{title}</p>
-      <p className="text-3xl font-bold text-dark">{value}</p>
+    <div className={`bg-white dark:bg-gray-800 p-5 rounded-lg shadow-lg border-l-4 ${colors[color]}`}>
+      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
+      <p className="text-3xl font-bold text-dark dark:text-gray-100">{value}</p>
     </div>
   );
 };

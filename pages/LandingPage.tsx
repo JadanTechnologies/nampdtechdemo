@@ -1,14 +1,22 @@
+
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useBranding } from '../context/BrandingContext'; // New Import
 
-const FeatureCard = ({ icon, title, children }: { icon: React.ReactNode, title: string, children: React.ReactNode }) => (
-    <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+// FIX: Refactored to a standalone interface for better readability and type safety.
+interface FeatureCardProps {
+  icon: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+}
+
+const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, children }) => (
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
         <div className="flex items-center justify-center h-12 w-12 rounded-full bg-primary text-white mb-4">
             {icon}
         </div>
-        <h3 className="text-xl font-bold text-dark mb-2">{title}</h3>
-        <p className="text-dark/70">{children}</p>
+        <h3 className="text-xl font-bold text-dark dark:text-gray-100 mb-2">{title}</h3>
+        <p className="text-dark/70 dark:text-gray-400">{children}</p>
     </div>
 );
 
@@ -69,9 +77,9 @@ const LandingPage: React.FC = () => {
     }
 
     return (
-        <div className="bg-light text-dark font-sans">
+        <div className="bg-light dark:bg-gray-900 text-dark font-sans">
             {/* Header */}
-            <header className="sticky top-0 bg-white/80 backdrop-blur-md shadow-sm z-50">
+            <header className="sticky top-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm z-50">
                 <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
                     <div className="flex items-center gap-3">
                        {(branding.showLogoInHeader && branding.logoUrl) ? (
@@ -88,13 +96,13 @@ const LandingPage: React.FC = () => {
             </header>
 
             {/* Hero Section */}
-            <section className="bg-white">
+            <section className="bg-white dark:bg-gray-800">
                 <div className="container mx-auto px-6 py-20 flex flex-col md:flex-row items-center">
                     <div className="md:w-1/2 text-center md:text-left">
                         <h1 className="text-4xl md:text-6xl font-extrabold text-primary leading-tight">
                             Empowering the Nation's Mobile Technicians.
                         </h1>
-                        <p className="mt-4 text-lg text-dark/80 max-w-lg mx-auto md:mx-0">
+                        <p className="mt-4 text-lg text-dark/80 dark:text-gray-300 max-w-lg mx-auto md:mx-0">
                             Join the official portal for professional development, secure registration, and community connection.
                         </p>
                         <div className="mt-8 space-x-4">
@@ -111,31 +119,25 @@ const LandingPage: React.FC = () => {
             <section className="py-20">
                 <div className="container mx-auto px-6">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold text-dark">The Professional's Portal</h2>
-                        <p className="text-dark/70 mt-2">Everything you need, all in one place.</p>
+                        <h2 className="text-3xl font-bold text-dark dark:text-gray-100">The Professional's Portal</h2>
+                        <p className="text-dark/70 dark:text-gray-400 mt-2">Everything you need, all in one place.</p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {/* FIX: Added children prop to provide descriptive text for the FeatureCard. */}
                         <FeatureCard title="AI-Powered Registration" icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>}>
                             Scan your NIN slip with our AI to auto-fill your details, making registration fast and error-free.
                         </FeatureCard>
-                        {/* FIX: Added children prop to provide descriptive text for the FeatureCard. */}
-                        <FeatureCard title="Digital ID & Certificate" icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12zM10 8a2 2 0 100-4 2 2 0 000 4z" /></svg>}>
+                         <FeatureCard title="Digital ID & Certificate" icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12zM10 8a2 2 0 100-4 2 2 0 000 4z" /></svg>}>
                             Get instant access to a verifiable digital ID card and a printable certificate upon membership activation.
                         </FeatureCard>
-                        {/* FIX: Added children prop to provide descriptive text for the FeatureCard. */}
                          <FeatureCard title="Secure Approval Workflow" icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}>
                             Our multi-level approval process ensures all members are properly vetted by local and state leadership.
                         </FeatureCard>
-                        {/* FIX: Added children prop to provide descriptive text for the FeatureCard. */}
-                         <FeatureCard title="Member Directory" icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656-.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>}>
+                         <FeatureCard title="Member Directory" icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>}>
                             Connect with fellow technicians across the nation through our comprehensive member directory.
                         </FeatureCard>
-                        {/* FIX: Added children prop to provide descriptive text for the FeatureCard. */}
                         <FeatureCard title="Financial Tracking" icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>}>
                             Manage your payments with ease and access your financial history anytime. Admins get powerful financial overviews.
                         </FeatureCard>
-                        {/* FIX: Added children prop to provide descriptive text for the FeatureCard. */}
                         <FeatureCard title="Profile Management" icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>}>
                             Keep your personal and business information up-to-date through your personal profile page.
                         </FeatureCard>
@@ -144,10 +146,10 @@ const LandingPage: React.FC = () => {
             </section>
 
              {/* Verification Section */}
-            <section className="py-20 bg-primary/5">
+            <section className="py-20 bg-primary/5 dark:bg-primary/20">
                 <div className="container mx-auto px-6 text-center">
-                    <h2 className="text-3xl font-bold text-dark">Verify a Member's Status</h2>
-                    <p className="text-dark/70 mt-2 mb-8 max-w-2xl mx-auto">
+                    <h2 className="text-3xl font-bold text-dark dark:text-gray-100">Verify a Member's Status</h2>
+                    <p className="text-dark/70 dark:text-gray-400 mt-2 mb-8 max-w-2xl mx-auto">
                         Use our public verification tool to confirm if a technician is an active, registered member of {branding.brandName}. Enter their Membership ID below.
                     </p>
                     <form onSubmit={handleVerify} className="max-w-xl mx-auto flex flex-col sm:flex-row gap-3">
@@ -156,7 +158,7 @@ const LandingPage: React.FC = () => {
                             value={verificationId}
                             onChange={(e) => setVerificationId(e.target.value)}
                             placeholder="Enter Member ID (e.g., mem-001)"
-                            className="w-full px-5 py-3 border border-gray-300 rounded-full focus:ring-secondary focus:border-secondary transition"
+                            className="w-full px-5 py-3 border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-white rounded-full focus:ring-secondary focus:border-secondary transition"
                             required
                         />
                         <button
@@ -170,10 +172,10 @@ const LandingPage: React.FC = () => {
             </section>
 
              {/* Demo Section */}
-            <section className="bg-white py-20">
+            <section className="bg-white dark:bg-gray-800 py-20">
                  <div className="container mx-auto px-6 text-center">
-                    <h2 className="text-3xl font-bold text-dark">Explore the Portal (Demo Access)</h2>
-                    <p className="text-dark/70 mt-2 mb-8">Use the emails below to log in and test the features for each role.</p>
+                    <h2 className="text-3xl font-bold text-dark dark:text-gray-100">Explore the Portal (Demo Access)</h2>
+                    <p className="text-dark/70 dark:text-gray-400 mt-2 mb-8">Use the emails below to log in and test the features for each role.</p>
                      <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                          {demoUsers.map(user => (
                              <div key={user.role} className={`p-4 bg-${user.color}-100 border-l-4 border-${user.color}-500 text-left rounded-md`}>

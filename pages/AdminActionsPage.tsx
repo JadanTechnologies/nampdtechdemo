@@ -54,16 +54,16 @@ const AdminActionsPage: React.FC = () => {
 
     return (
         <div>
-            <h1 className="text-3xl font-bold text-dark mb-6">Admin Action Approvals</h1>
-            <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h1 className="text-3xl font-bold text-dark dark:text-gray-100 mb-6">Admin Action Approvals</h1>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
                 {loading ? (
                     <div className="flex justify-center items-center h-64"><Spinner size="lg" /></div>
                 ) : pendingActions.length === 0 ? (
-                    <p className="text-center text-gray-500 py-8">No pending action requests.</p>
+                    <p className="text-center text-gray-500 dark:text-gray-400 py-8">No pending action requests.</p>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left text-gray-500">
-                            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
                                     <th scope="col" className="px-6 py-3">Member Name</th>
                                     <th scope="col" className="px-6 py-3">Action</th>
@@ -74,8 +74,8 @@ const AdminActionsPage: React.FC = () => {
                             </thead>
                             <tbody>
                                 {pendingActions.map(action => (
-                                    <tr key={action.id} className="bg-white border-b hover:bg-gray-50">
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{action.memberName}</td>
+                                    <tr key={action.id} className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                        <td className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">{action.memberName}</td>
                                         <td className="px-6 py-4">{getActionBadge(action.action)}</td>
                                         <td className="px-6 py-4">{action.requestedBy} ({action.requesterRole})</td>
                                         <td className="px-6 py-4">{new Date(action.dateRequested).toLocaleDateString()}</td>

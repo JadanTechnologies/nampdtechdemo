@@ -36,16 +36,16 @@ const PaymentApprovalsPage: React.FC = () => {
 
     return (
         <div>
-            <h1 className="text-3xl font-bold text-dark mb-6">Manual Payment Approvals</h1>
-            <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h1 className="text-3xl font-bold text-dark dark:text-gray-100 mb-6">Manual Payment Approvals</h1>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
                 {loading ? (
                     <div className="flex justify-center items-center h-64"><Spinner size="lg" /></div>
                 ) : pendingPayments.length === 0 ? (
-                    <p className="text-center text-gray-500 py-8">No pending payment approvals.</p>
+                    <p className="text-center text-gray-500 dark:text-gray-400 py-8">No pending payment approvals.</p>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left text-gray-500">
-                            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
                                     <th scope="col" className="px-6 py-3">Member Name</th>
                                     <th scope="col" className="px-6 py-3">Amount</th>
@@ -56,8 +56,8 @@ const PaymentApprovalsPage: React.FC = () => {
                             </thead>
                             <tbody>
                                 {pendingPayments.map(payment => (
-                                    <tr key={payment.id} className="bg-white border-b hover:bg-gray-50">
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{payment.memberName}</td>
+                                    <tr key={payment.id} className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                        <td className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">{payment.memberName}</td>
                                         <td className="px-6 py-4">₦{payment.amount.toLocaleString()}</td>
                                         <td className="px-6 py-4">{new Date(payment.date).toLocaleDateString()}</td>
                                         <td className="px-6 py-4">{payment.state}</td>
@@ -74,29 +74,29 @@ const PaymentApprovalsPage: React.FC = () => {
 
             {selectedPayment && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
-                    <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg">
                         <div className="p-6">
                             <div className="flex justify-between items-start">
-                                <h3 className="text-xl font-semibold text-gray-900">Review Payment</h3>
-                                <button onClick={() => setSelectedPayment(null)} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+                                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Review Payment</h3>
+                                <button onClick={() => setSelectedPayment(null)} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:text-gray-300 dark:hover:text-white">
                                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
                                 </button>
                             </div>
-                            <div className="mt-4 space-y-2 text-sm">
+                            <div className="mt-4 space-y-2 text-sm text-gray-700 dark:text-gray-300">
                                 <p><strong>Member:</strong> {selectedPayment.memberName}</p>
                                 <p><strong>Amount:</strong> ₦{selectedPayment.amount.toLocaleString()}</p>
                                 <p><strong>Date:</strong> {new Date(selectedPayment.date).toLocaleString()}</p>
                             </div>
                             <div className="mt-4">
-                                <h4 className="font-semibold mb-2">Proof of Payment:</h4>
+                                <h4 className="font-semibold mb-2 dark:text-gray-200">Proof of Payment:</h4>
                                 {selectedPayment.paymentProofUrl ? (
                                     <a href={selectedPayment.paymentProofUrl} target="_blank" rel="noreferrer">
-                                        <img src={selectedPayment.paymentProofUrl} alt="Proof of payment" className="max-w-full h-auto max-h-80 rounded-md border" />
+                                        <img src={selectedPayment.paymentProofUrl} alt="Proof of payment" className="max-w-full h-auto max-h-80 rounded-md border dark:border-gray-600" />
                                     </a>
-                                ) : <p className="text-gray-500">No proof was uploaded.</p>}
+                                ) : <p className="text-gray-500 dark:text-gray-400">No proof was uploaded.</p>}
                             </div>
                         </div>
-                        <div className="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b">
+                        <div className="flex items-center p-6 space-x-2 border-t border-gray-200 dark:border-gray-700 rounded-b">
                             <button onClick={() => handleApproval(selectedPayment, true)} className="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Approve</button>
                             <button onClick={() => handleApproval(selectedPayment, false)} className="text-white bg-red-600 hover:bg-red-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Reject</button>
                         </div>

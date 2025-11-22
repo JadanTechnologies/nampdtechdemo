@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 
 const OnlineStatusIndicator: React.FC = () => {
@@ -19,7 +20,7 @@ const OnlineStatusIndicator: React.FC = () => {
     return (
         <div className="flex items-center gap-2 text-sm">
             <span className={`w-3 h-3 rounded-full animate-pulse ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
-            <span className={isOnline ? 'text-green-700 font-medium' : 'text-red-700 font-medium'}>
+            <span className={isOnline ? 'text-green-700 dark:text-green-400 font-medium' : 'text-red-700 dark:text-red-400 font-medium'}>
                 {isOnline ? 'Online' : 'Offline'}
             </span>
         </div>

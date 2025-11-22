@@ -35,18 +35,18 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-light flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-light dark:bg-gray-900 flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-md">
             <div className="text-center mb-8">
                 <h1 className="text-4xl font-bold text-primary">Nampdtech Portal</h1>
-                <p className="text-dark/70 mt-2">National Association of Mobile Phone Technicians</p>
+                <p className="text-dark/70 dark:text-gray-400 mt-2">National Association of Mobile Phone Technicians</p>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-lg">
-                <h2 className="text-2xl font-semibold text-center text-dark mb-6">Member Login</h2>
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg">
+                <h2 className="text-2xl font-semibold text-center text-dark dark:text-gray-100 mb-6">Member Login</h2>
                 <form onSubmit={handleLogin}>
                     <div className="mb-4">
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Email Address
                         </label>
                         <input
@@ -54,7 +54,7 @@ const LoginPage: React.FC = () => {
                             id="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary transition"
+                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-secondary focus:border-secondary transition"
                             placeholder="e.g., member@test.com"
                             required
                         />
@@ -69,7 +69,7 @@ const LoginPage: React.FC = () => {
                     </button>
                 </form>
                 <div className="mt-6 text-center">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                         Not a member?{' '}
                         <Link to="/register" className="font-medium text-primary hover:text-secondary">
                             Register here
@@ -77,7 +77,7 @@ const LoginPage: React.FC = () => {
                     </p>
                 </div>
                  <div className="mt-6 text-center">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                         <Link to="/" className="font-medium text-primary hover:text-secondary">
                             &larr; Back to Home
                         </Link>

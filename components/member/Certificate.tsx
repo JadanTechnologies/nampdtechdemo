@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MemberApplication } from '../../types';
 import { useBranding } from '../../context/BrandingContext';
@@ -11,7 +12,7 @@ const Certificate: React.FC<CertificateProps> = ({ member }) => {
   const verificationUrl = `${window.location.origin}${window.location.pathname}#/verify?id=${member.id}`;
 
   return (
-    <div className="w-full aspect-[11/8.5] border-8 border-primary bg-light p-8 flex flex-col relative overflow-hidden">
+    <div className="w-full aspect-[11/8.5] border-8 border-primary bg-light dark:bg-white p-8 flex flex-col relative overflow-hidden text-black">
       {/* Background watermark */}
       <div className="absolute inset-0 flex items-center justify-center">
         <h1 className="text-8xl md:text-9xl font-black text-primary opacity-5 transform rotate-[-30deg] whitespace-nowrap">

@@ -108,34 +108,34 @@ const RegisterPage: React.FC = () => {
       case 0:
         return (
           <>
-            <h3 className="text-xl font-semibold mb-4 text-dark">Personal Information</h3>
+            <h3 className="text-xl font-semibold mb-4 text-dark dark:text-gray-100">Personal Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">Full Name</label>
-                <input type="text" name="fullName" value={formData.fullName} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
+                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
+                <input type="text" name="fullName" value={formData.fullName} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" required />
               </div>
               <div>
-                <label htmlFor="nin" className="block text-sm font-medium text-gray-700">National Identity Number (NIN)</label>
-                <input type="text" name="nin" value={formData.nin} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
+                <label htmlFor="nin" className="block text-sm font-medium text-gray-700 dark:text-gray-300">National Identity Number (NIN)</label>
+                <input type="text" name="nin" value={formData.nin} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" required />
               </div>
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone Number</label>
-                <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</label>
+                <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" required />
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email Address</label>
-                <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
+                <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" required />
               </div>
               <div>
-                <label htmlFor="state" className="block text-sm font-medium text-gray-700">State of Residence</label>
-                <select name="state" value={formData.state} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                <label htmlFor="state" className="block text-sm font-medium text-gray-700 dark:text-gray-300">State of Residence</label>
+                <select name="state" value={formData.state} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
                   <option value="">Select State</option>
                   {NIGERIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
               <div>
-                <label htmlFor="lga" className="block text-sm font-medium text-gray-700">LGA of Residence</label>
-                <select name="lga" value={formData.lga} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required disabled={!formData.state}>
+                <label htmlFor="lga" className="block text-sm font-medium text-gray-700 dark:text-gray-300">LGA of Residence</label>
+                <select name="lga" value={formData.lga} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" required disabled={!formData.state}>
                     <option value="">{formData.state ? 'Select LGA' : 'Select a state first'}</option>
                     {lgas.map(lga => <option key={lga} value={lga}>{lga}</option>)}
                 </select>
@@ -146,15 +146,15 @@ const RegisterPage: React.FC = () => {
       case 1:
         return (
           <>
-            <h3 className="text-xl font-semibold mb-4 text-dark">Business Details (Optional)</h3>
+            <h3 className="text-xl font-semibold mb-4 text-dark dark:text-gray-100">Business Details (Optional)</h3>
             <div className="space-y-4">
               <div>
-                <label htmlFor="businessName" className="block text-sm font-medium text-gray-700">Business Name</label>
-                <input type="text" name="businessName" value={formData.businessName} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                <label htmlFor="businessName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Business Name</label>
+                <input type="text" name="businessName" value={formData.businessName} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
               </div>
               <div>
-                <label htmlFor="businessAddress" className="block text-sm font-medium text-gray-700">Business Address</label>
-                <input type="text" name="businessAddress" value={formData.businessAddress} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                <label htmlFor="businessAddress" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Business Address</label>
+                <input type="text" name="businessAddress" value={formData.businessAddress} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
               </div>
             </div>
           </>
@@ -162,9 +162,9 @@ const RegisterPage: React.FC = () => {
       case 2:
         return (
           <>
-            <h3 className="text-xl font-semibold mb-4 text-dark">Document Upload</h3>
+            <h3 className="text-xl font-semibold mb-4 text-dark dark:text-gray-100">Document Upload</h3>
              {isOcrLoading && (
-                <div className="flex items-center gap-2 p-3 mb-4 text-sm text-blue-700 bg-blue-100 rounded-lg" role="alert">
+                <div className="flex items-center gap-2 p-3 mb-4 text-sm text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-900/50 dark:text-blue-300" role="alert">
                     <Spinner size="sm"/>
                     <span className="font-medium">Scanning NIN slip...</span> This may take a moment.
                 </div>
@@ -183,19 +183,19 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-light flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-light dark:bg-gray-900 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-4xl mx-auto">
         <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-primary">New Member Registration</h1>
-            <p className="text-dark/70 mt-2">Join the National Association of Mobile Phone Technicians</p>
+            <p className="text-dark/70 dark:text-gray-400 mt-2">Join the National Association of Mobile Phone Technicians</p>
         </div>
 
-        <div className="bg-white p-8 rounded-xl shadow-lg">
+        <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg">
           <div className="mb-8">
             <ol className="flex items-center w-full">
               {steps.map((step, index) => (
-                <li key={index} className={`flex w-full items-center ${index < steps.length - 1 ? "after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-300 after:border-4 after:inline-block" : ""}`}>
-                  <span className={`flex items-center justify-center w-10 h-10 rounded-full shrink-0 ${index <= currentStep ? 'bg-primary text-white' : 'bg-gray-200 text-gray-600'}`}>
+                <li key={index} className={`flex w-full items-center ${index < steps.length - 1 ? "after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-300 dark:after:border-gray-600 after:border-4 after:inline-block" : ""}`}>
+                  <span className={`flex items-center justify-center w-10 h-10 rounded-full shrink-0 ${index <= currentStep ? 'bg-primary text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'}`}>
                     {index + 1}
                   </span>
                 </li>
@@ -211,7 +211,7 @@ const RegisterPage: React.FC = () => {
 
           <div className="mt-8 flex justify-between">
             {currentStep > 0 ? (
-              <button onClick={prevStep} className="bg-gray-300 text-gray-800 py-2 px-6 rounded-md hover:bg-gray-400 transition">Back</button>
+              <button onClick={prevStep} className="bg-gray-300 text-gray-800 dark:bg-gray-600 dark:text-gray-200 py-2 px-6 rounded-md hover:bg-gray-400 dark:hover:bg-gray-500 transition">Back</button>
             ) : <div></div>}
             
             {currentStep < steps.length - 1 ? (

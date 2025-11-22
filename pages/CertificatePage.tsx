@@ -33,11 +33,14 @@ const CertificatePage: React.FC = () => {
                             width: 100%;
                             height: 100%;
                         }
+                        .dark #certificate-container {
+                           background-color: white !important;
+                        }
                     }
                 `}
             </style>
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold text-dark">Membership Certificate</h1>
+                <h1 className="text-3xl font-bold text-dark dark:text-gray-100">Membership Certificate</h1>
                 <button 
                     onClick={handlePrint} 
                     className="bg-primary text-white py-2 px-6 rounded-md hover:bg-secondary transition inline-flex items-center gap-2"
@@ -48,7 +51,7 @@ const CertificatePage: React.FC = () => {
                     Print Certificate
                 </button>
             </div>
-            <p className="text-gray-600 mb-8 max-w-2xl">This is your official certificate of membership. You can print this document for your records.</p>
+            <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-2xl">This is your official certificate of membership. You can print this document for your records.</p>
             <div id="certificate-container" className="bg-white p-4 shadow-2xl">
                  <Certificate member={user.memberDetails} />
             </div>

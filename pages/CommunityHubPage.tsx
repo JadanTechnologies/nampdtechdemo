@@ -132,21 +132,21 @@ const CommunityHubPage: React.FC = () => {
     }
 
     return (
-        <div className="h-[calc(100vh-120px)] flex flex-col bg-white rounded-lg shadow-lg">
-            <header className="border-b p-4 flex justify-between items-center">
-                <h1 className="text-xl font-bold text-dark"># {currentChannel}</h1>
+        <div className="h-[calc(100vh-120px)] flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+            <header className="border-b dark:border-gray-700 p-4 flex justify-between items-center">
+                <h1 className="text-xl font-bold text-dark dark:text-gray-100"># {currentChannel}</h1>
                 <OnlineStatusIndicator />
             </header>
             <div className="flex flex-1 overflow-hidden">
                 {/* Channels List */}
-                <aside className="w-64 bg-light border-r overflow-y-auto">
-                    <div className="p-4 font-bold text-dark">Channels</div>
+                <aside className="w-64 bg-light dark:bg-gray-800 border-r dark:border-gray-700 overflow-y-auto">
+                    <div className="p-4 font-bold text-dark dark:text-gray-200">Channels</div>
                     <ul>
                         {channels.map(channel => (
                             <li key={channel}>
                                 <button 
                                     onClick={() => setCurrentChannel(channel)}
-                                    className={`w-full text-left px-4 py-2 ${currentChannel === channel ? 'bg-secondary text-white' : 'hover:bg-gray-200'}`}
+                                    className={`w-full text-left px-4 py-2 dark:text-gray-300 ${currentChannel === channel ? 'bg-secondary text-white' : 'hover:bg-gray-200 dark:hover:bg-gray-700'}`}
                                 >
                                     # {channel}
                                 </button>
@@ -156,23 +156,23 @@ const CommunityHubPage: React.FC = () => {
                 </aside>
 
                 {/* Main Chat Area */}
-                <main className="flex-1 flex flex-col">
+                <main className="flex-1 flex flex-col bg-white dark:bg-gray-900">
                     <div className="flex-1 p-6 overflow-y-auto space-y-4">
                         {messages.map(msg => (
                             <div key={msg.id} className="flex items-start gap-3">
                                 <img src={`https://i.pravatar.cc/40?u=${msg.senderId}`} alt={msg.senderName} className="w-10 h-10 rounded-full" />
                                 <div>
                                     <div className="flex items-baseline gap-2">
-                                        <span className="font-bold text-dark">{msg.senderName}</span>
-                                        <span className="text-xs text-gray-500">{new Date(msg.timestamp).toLocaleTimeString()}</span>
+                                        <span className="font-bold text-dark dark:text-gray-200">{msg.senderName}</span>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">{new Date(msg.timestamp).toLocaleTimeString()}</span>
                                     </div>
-                                    <p className="text-dark/90">{msg.content}</p>
+                                    <p className="text-dark/90 dark:text-gray-300">{msg.content}</p>
                                 </div>
                             </div>
                         ))}
                         <div ref={messagesEndRef} />
                     </div>
-                    <div className="p-4 border-t bg-light">
+                    <div className="p-4 border-t dark:border-gray-700 bg-light dark:bg-gray-800">
                         <div className="flex items-center gap-2">
                             <input
                                 type="text"
@@ -180,7 +180,7 @@ const CommunityHubPage: React.FC = () => {
                                 onChange={e => setNewMessage(e.target.value)}
                                 onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
                                 placeholder={`Message #${currentChannel}`}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md"
                                 disabled={user?.memberDetails?.forumStatus === 'muted'}
                             />
                             <button onClick={handleSendMessage} className="bg-primary text-white p-2 rounded-md hover:bg-secondary">
@@ -192,26 +192,26 @@ const CommunityHubPage: React.FC = () => {
                 </main>
 
                 {/* Members List */}
-                 <aside className="w-72 bg-light border-l overflow-y-auto">
-                    <div className="p-4 font-bold text-dark">
+                 <aside className="w-72 bg-light dark:bg-gray-800 border-l dark:border-gray-700 overflow-y-auto">
+                    <div className="p-4 font-bold text-dark dark:text-gray-200">
                         Members in #{currentChannel}
-                        <span className="text-sm font-normal text-green-600 ml-2">({onlineCount} online)</span>
+                        <span className="text-sm font-normal text-green-600 dark:text-green-400 ml-2">({onlineCount} online)</span>
                     </div>
                      <ul>
                         {membersInCurrentChannel.map(member => (
-                             <li key={member.id} className="px-4 py-2 hover:bg-gray-200 flex justify-between items-center group">
+                             <li key={member.id} className="px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 flex justify-between items-center group">
                                <div className="flex items-center gap-2">
                                    <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${member.isOnline ? 'bg-green-500' : 'bg-gray-400'}`} title={member.isOnline ? 'Online' : 'Offline'}></span>
                                    <div>
-                                       <p className="font-semibold text-sm text-dark">{member.fullName}</p>
-                                       <p className="text-xs text-gray-500">{member.role} - {member.state}</p>
+                                       <p className="font-semibold text-sm text-dark dark:text-gray-200">{member.fullName}</p>
+                                       <p className="text-xs text-gray-500 dark:text-gray-400">{member.role} - {member.state}</p>
                                        {member.forumStatus !== 'active' && <p className="text-xs text-red-500 capitalize font-bold">{member.forumStatus}</p>}
                                    </div>
                                </div>
                                 {(user?.role === UserRole.SUPER_ADMIN || (user?.role === UserRole.STATE_ADMIN && user.state === member.state)) && user?.id !== member.userId && (
                                    <div className="hidden group-hover:flex gap-1">
-                                       <button onClick={() => handleModeration(member.id, 'mute')} title="Mute User" className="p-1 text-yellow-600 hover:bg-yellow-100 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414z" clipRule="evenodd" /></svg></button>
-                                       <button onClick={() => handleModeration(member.id, 'ban')} title="Ban User" className="p-1 text-red-600 hover:bg-red-100 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.367zM14.89 13.477L6.523 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clipRule="evenodd" /></svg></button>
+                                       <button onClick={() => handleModeration(member.id, 'mute')} title="Mute User" className="p-1 text-yellow-600 hover:bg-yellow-100 dark:text-yellow-400 dark:hover:bg-gray-600 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414z" clipRule="evenodd" /></svg></button>
+                                       <button onClick={() => handleModeration(member.id, 'ban')} title="Ban User" className="p-1 text-red-600 hover:bg-red-100 dark:text-red-400 dark:hover:bg-gray-600 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.367zM14.89 13.477L6.523 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clipRule="evenodd" /></svg></button>
                                    </div>
                                )}
                             </li>

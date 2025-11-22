@@ -58,7 +58,7 @@ const RolesAndPermissionsPage: React.FC = () => {
         <div>
              {toastMessage && <Toast message={toastMessage} type="success" onClose={() => setToastMessage(null)} />}
             <div className="flex justify-between items-center mb-6">
-                 <h1 className="text-3xl font-bold text-dark">Roles & Permissions</h1>
+                 <h1 className="text-3xl font-bold text-dark dark:text-gray-100">Roles & Permissions</h1>
                  <button onClick={openModalForCreate} className="bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">
                      Create New Role
                  </button>
@@ -66,29 +66,29 @@ const RolesAndPermissionsPage: React.FC = () => {
             {loading ? <div className="flex justify-center items-center h-64"><Spinner size="lg" /></div> : (
                 <div className="space-y-6">
                     {roles.map((role) => (
-                        <div key={role.id} className="bg-white p-6 rounded-lg shadow-lg">
+                        <div key={role.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <h2 className="text-xl font-semibold text-dark">{role.name}</h2>
-                                    <p className="text-sm text-gray-500">{role.description}</p>
+                                    <h2 className="text-xl font-semibold text-dark dark:text-gray-100">{role.name}</h2>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">{role.description}</p>
                                 </div>
                                 <div className="flex gap-2">
                                     <button onClick={() => openModalForEdit(role)} className="text-sm text-blue-600 hover:underline">Edit</button>
                                     <button onClick={() => handleDelete(role.id)} className="text-sm text-red-600 hover:underline">Delete</button>
                                 </div>
                             </div>
-                            <div className="border-t my-4"></div>
+                            <div className="border-t dark:border-gray-700 my-4"></div>
                             {role.permissions.length > 0 ? (
                                 <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                                     {role.permissions.map(permission => (
                                         <li key={permission} className="flex items-center text-sm">
                                             <svg className="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                                            <span className="text-gray-700 capitalize">{permission.replace(/_/g, ' ')}</span>
+                                            <span className="text-gray-700 dark:text-gray-300 capitalize">{permission.replace(/_/g, ' ')}</span>
                                         </li>
                                     ))}
                                 </ul>
                             ) : (
-                                <p className="text-gray-500">This role has no special permissions.</p>
+                                <p className="text-gray-500 dark:text-gray-400">This role has no special permissions.</p>
                             )}
                         </div>
                     ))}
@@ -131,22 +131,22 @@ const RoleEditorModal: React.FC<RoleEditorModalProps> = ({ role, onClose, onSave
 
     return (
          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
                 <form onSubmit={handleSubmit} className="flex flex-col h-full">
-                    <div className="p-6 border-b">
-                        <h3 className="text-xl font-semibold text-gray-900">{role.id ? 'Edit Role' : 'Create New Role'}</h3>
+                    <div className="p-6 border-b dark:border-gray-700">
+                        <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{role.id ? 'Edit Role' : 'Create New Role'}</h3>
                     </div>
                     <div className="p-6 space-y-4 overflow-y-auto">
                         <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Role Name</label>
-                            <input type="text" id="name" value={formData.name} onChange={e => setFormData(p => ({...p, name: e.target.value}))} required className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Role Name</label>
+                            <input type="text" id="name" value={formData.name} onChange={e => setFormData(p => ({...p, name: e.target.value}))} required className="mt-1 block w-full border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white rounded-md shadow-sm" />
                         </div>
                         <div>
-                            <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
-                            <textarea id="description" value={formData.description} onChange={e => setFormData(p => ({...p, description: e.target.value}))} rows={2} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+                            <textarea id="description" value={formData.description} onChange={e => setFormData(p => ({...p, description: e.target.value}))} rows={2} className="mt-1 block w-full border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white rounded-md shadow-sm" />
                         </div>
                         <div>
-                             <h4 className="text-md font-medium text-gray-800 mb-2">Permissions</h4>
+                             <h4 className="text-md font-medium text-gray-800 dark:text-gray-200 mb-2">Permissions</h4>
                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
                                 {ALL_PERMISSIONS.map(p => (
                                     <label key={p} className="flex items-center space-x-2">
@@ -156,14 +156,14 @@ const RoleEditorModal: React.FC<RoleEditorModalProps> = ({ role, onClose, onSave
                                             onChange={(e) => handlePermissionChange(p, e.target.checked)}
                                             className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                                         />
-                                        <span className="text-sm text-gray-700 capitalize">{p.replace(/_/g, ' ')}</span>
+                                        <span className="text-sm text-gray-700 dark:text-gray-300 capitalize">{p.replace(/_/g, ' ')}</span>
                                     </label>
                                 ))}
                              </div>
                         </div>
                     </div>
-                    <div className="flex items-center justify-end p-6 space-x-2 border-t mt-auto">
-                        <button type="button" onClick={onClose} className="bg-gray-200 text-dark py-2 px-6 rounded-md hover:bg-gray-300">Cancel</button>
+                    <div className="flex items-center justify-end p-6 space-x-2 border-t dark:border-gray-700 mt-auto">
+                        <button type="button" onClick={onClose} className="bg-gray-200 text-dark dark:bg-gray-600 dark:text-gray-200 py-2 px-6 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500">Cancel</button>
                         <button type="submit" className="bg-primary text-white py-2 px-6 rounded-md hover:bg-secondary">Save Role</button>
                     </div>
                 </form>

@@ -47,18 +47,18 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-dark mb-6">Admin Dashboard</h1>
+      <h1 className="text-3xl font-bold text-dark dark:text-gray-100 mb-6">Admin Dashboard</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard title="Total Members" value={totalMembers.toString()} />
         <StatCard title="Active Members" value={activeMembers.toString()} color="green" />
         <StatCard title="Pending Members" value={pendingMembers.toString()} color="yellow" />
         <StatCard title="Total Revenue" value={`₦${totalRevenue.toLocaleString()}`} color="blue" />
       </div>
-      <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h2 className="text-xl font-semibold text-dark mb-4">Member Distribution by State</h2>
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h2 className="text-xl font-semibold text-dark dark:text-gray-200 mb-4">Member Distribution by State</h2>
         {user?.role === UserRole.SUPER_ADMIN ?
          <MemberDistributionChart members={members} /> :
-         <p>State-level charts are coming soon.</p>
+         <p className="dark:text-gray-300">State-level charts are coming soon.</p>
         }
       </div>
     </div>

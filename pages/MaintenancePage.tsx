@@ -7,7 +7,7 @@ interface MaintenancePageProps {
 
 const MaintenancePage: React.FC<MaintenancePageProps> = ({ message }) => {
     return (
-        <div className="min-h-screen bg-light flex flex-col items-center justify-center p-4 text-center">
+        <div className="min-h-screen bg-light dark:bg-gray-900 flex flex-col items-center justify-center p-4 text-center">
             <div className="w-full max-w-2xl">
                  <div className="flex justify-center mb-6">
                     <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center">
@@ -17,10 +17,10 @@ const MaintenancePage: React.FC<MaintenancePageProps> = ({ message }) => {
                     </div>
                 </div>
                 <h1 className="text-4xl font-bold text-primary mb-4">Under Maintenance</h1>
-                <p className="text-lg text-dark/80">
+                <p className="text-lg text-dark/80 dark:text-gray-300">
                     {message}
                 </p>
-                 <p className="text-sm text-gray-500 mt-8">
+                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-8">
                     &copy; {new Date().getFullYear()} Nampdtech. All Rights Reserved.
                  </p>
             </div>

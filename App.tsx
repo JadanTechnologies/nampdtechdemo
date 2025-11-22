@@ -8,6 +8,7 @@ import { BrandingProvider, useBranding } from './context/BrandingContext';
 import { SettingsProvider, useSettings } from './context/SettingsContext';
 import { GeminiProvider } from './context/GeminiContext';
 import { NotificationProvider } from './context/NotificationContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Layout from './components/layout/Layout';
@@ -92,99 +93,101 @@ const MaintenanceModeChecker: React.FC<{ children: React.ReactNode }> = ({ child
 
 function App() {
   return (
-    <AuthProvider>
-      <SettingsProvider>
-        <GeminiProvider>
-          <BrandingProvider>
-            <NotificationProvider>
-              <FaviconUpdater />
-              <CronJobRunner />
-              <MaintenanceModeChecker>
-                <HashRouter>
-                  <Routes>
-                    <Route path="/" element={<LandingPage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/register" element={<RegisterPage />} />
-                    <Route path="/verify" element={<VerifyMemberPage />} />
+    <ThemeProvider>
+      <AuthProvider>
+        <SettingsProvider>
+          <GeminiProvider>
+            <BrandingProvider>
+              <NotificationProvider>
+                <FaviconUpdater />
+                <CronJobRunner />
+                <MaintenanceModeChecker>
+                  <HashRouter>
+                    <Routes>
+                      <Route path="/" element={<LandingPage />} />
+                      <Route path="/login" element={<LoginPage />} />
+                      <Route path="/register" element={<RegisterPage />} />
+                      <Route path="/verify" element={<VerifyMemberPage />} />
 
-                    
-                    <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-                      <Route path="/dashboard" element={<DashboardPage />} />
-                      <Route path="/approvals" element={<ApprovalsPage />} />
-                       <Route 
-                        path="/payment-approvals" 
-                        element={
-                          <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
-                            <PaymentApprovalsPage />
-                          </ProtectedRoute>
-                        } 
-                      />
-                      <Route path="/members" element={<MembersPage />} />
-                      <Route path="/financials" element={<FinancialsPage />} />
-                      <Route path="/profile" element={<ProfilePage />} />
-                      <Route path="/id-card" element={<IdCardPage />} />
-                      <Route path="/certificate" element={<CertificatePage />} />
-                      <Route path="/payments" element={<PaymentsPage />} />
-                      <Route path="/community" element={<CommunityHubPage />} />
-                      <Route 
-                        path="/settings" 
-                        element={
-                          <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
-                            <SettingsPage />
-                          </ProtectedRoute>
-                        } 
-                      />
-                      <Route 
-                        path="/communication" 
-                        element={
-                          <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
-                            <CommunicationPage />
-                          </ProtectedRoute>
-                        } 
-                      />
-                       <Route 
-                        path="/admin-actions" 
-                        element={
-                          <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
-                            <AdminActionsPage />
-                          </ProtectedRoute>
-                        } 
-                      />
-                      <Route 
-                        path="/roles-permissions" 
-                        element={
-                          <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
-                            <RolesAndPermissionsPage />
-                          </ProtectedRoute>
-                        } 
-                      />
-                      <Route 
-                        path="/templates" 
-                        element={
-                          <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
-                            <TemplatesPage />
-                          </ProtectedRoute>
-                        } 
-                      />
-                      <Route 
-                        path="/conference" 
-                        element={
-                          <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
-                            <ConferencePage />
-                          </ProtectedRoute>
-                        } 
-                      />
-                    </Route>
-                    
-                     <Route path="*" element={<Navigate to="/" />} />
-                  </Routes>
-                </HashRouter>
-              </MaintenanceModeChecker>
-            </NotificationProvider>
-          </BrandingProvider>
-        </GeminiProvider>
-      </SettingsProvider>
-    </AuthProvider>
+                      
+                      <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                        <Route path="/dashboard" element={<DashboardPage />} />
+                        <Route path="/approvals" element={<ApprovalsPage />} />
+                         <Route 
+                          path="/payment-approvals" 
+                          element={
+                            <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
+                              <PaymentApprovalsPage />
+                            </ProtectedRoute>
+                          } 
+                        />
+                        <Route path="/members" element={<MembersPage />} />
+                        <Route path="/financials" element={<FinancialsPage />} />
+                        <Route path="/profile" element={<ProfilePage />} />
+                        <Route path="/id-card" element={<IdCardPage />} />
+                        <Route path="/certificate" element={<CertificatePage />} />
+                        <Route path="/payments" element={<PaymentsPage />} />
+                        <Route path="/community" element={<CommunityHubPage />} />
+                        <Route 
+                          path="/settings" 
+                          element={
+                            <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
+                              <SettingsPage />
+                            </ProtectedRoute>
+                          } 
+                        />
+                        <Route 
+                          path="/communication" 
+                          element={
+                            <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
+                              <CommunicationPage />
+                            </ProtectedRoute>
+                          } 
+                        />
+                         <Route 
+                          path="/admin-actions" 
+                          element={
+                            <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
+                              <AdminActionsPage />
+                            </ProtectedRoute>
+                          } 
+                        />
+                        <Route 
+                          path="/roles-permissions" 
+                          element={
+                            <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
+                              <RolesAndPermissionsPage />
+                            </ProtectedRoute>
+                          } 
+                        />
+                        <Route 
+                          path="/templates" 
+                          element={
+                            <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
+                              <TemplatesPage />
+                            </ProtectedRoute>
+                          } 
+                        />
+                        <Route 
+                          path="/conference" 
+                          element={
+                            <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
+                              <ConferencePage />
+                            </ProtectedRoute>
+                          } 
+                        />
+                      </Route>
+                      
+                       <Route path="*" element={<Navigate to="/" />} />
+                    </Routes>
+                  </HashRouter>
+                </MaintenanceModeChecker>
+              </NotificationProvider>
+            </BrandingProvider>
+          </GeminiProvider>
+        </SettingsProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

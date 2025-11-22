@@ -12,8 +12,8 @@ const IdCardPage: React.FC = () => {
     
     return (
         <div>
-            <h1 className="text-3xl font-bold text-dark mb-6">Digital ID Card</h1>
-            <p className="text-gray-600 mb-8 max-w-2xl">This is your official digital membership card. You can present this as proof of your active membership with Nampdtech. Click or tap the card to flip it.</p>
+            <h1 className="text-3xl font-bold text-dark dark:text-gray-100 mb-6">Digital ID Card</h1>
+            <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-2xl">This is your official digital membership card. You can present this as proof of your active membership with Nampdtech. Click or tap the card to flip it.</p>
             <div className="flex justify-center">
                 <DigitalIdCard member={user.memberDetails} />
             </div>

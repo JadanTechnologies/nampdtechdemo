@@ -27,7 +27,7 @@ const Layout: React.FC = () => {
 
 
   return (
-    <div className="flex h-screen overflow-hidden bg-light">
+    <div className="flex h-screen overflow-hidden bg-light dark:bg-gray-900">
       <Sidebar 
         sidebarOpen={sidebarOpen} 
         setSidebarOpen={setSidebarOpen}

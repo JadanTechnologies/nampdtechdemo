@@ -1,12 +1,12 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types';
 import { MOCK_USERS } from '../constants';
-import { getMemberById, updateMember } from '../services/mockApi';
+import { getMemberById } from '../services/mockApi';
+import { createToken, decodeToken, isTokenExpired } from '../utils/jwt';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  // FIX: The login function signature was updated to match the implementation. It expects one argument (email), not two.
   login: (email: string) => Promise<boolean>;
   logout: () => void;
   updateUserMemberDetails: () => Promise<void>;
@@ -19,14 +19,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     try {
-      const storedUser = localStorage.getItem('nampdtech-user');
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
+      const token = localStorage.getItem('nampdtech-token');
+      if (token && !isTokenExpired(token)) {
+        const decodedUser = decodeToken(token);
+        setUser(decodedUser);
+      } else if (token) {
+        // If token exists but is expired, remove it
+        localStorage.removeItem('nampdtech-token');
+        setUser(null);
       }
     } catch (error) {
-      console.error("Failed to parse user from localStorage", error);
-      localStorage.removeItem('nampdtech-user');
+      console.error("Failed to process token from localStorage", error);
+      localStorage.removeItem('nampdtech-token');
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -36,7 +43,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setLoading(true);
     const foundUser = MOCK_USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
     if (foundUser) {
-      localStorage.setItem('nampdtech-user', JSON.stringify(foundUser));
+      const token = createToken(foundUser);
+      localStorage.setItem('nampdtech-token', token);
       setUser(foundUser);
       setLoading(false);
       return true;
@@ -47,16 +55,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('nampdtech-user');
+    localStorage.removeItem('nampdtech-token');
   };
 
   const updateUserMemberDetails = async () => {
     if (user && user.memberDetails) {
         const updatedMemberDetails = await getMemberById(user.memberDetails.id);
         if (updatedMemberDetails) {
-            const updatedUser = { ...user, memberDetails: updatedMemberDetails };
+            const updatedUser: User = { ...user, memberDetails: updatedMemberDetails };
+            
+            // Re-issue a new token with the updated details
+            const newToken = createToken(updatedUser);
+            localStorage.setItem('nampdtech-token', newToken);
+
+            // Update the user state
             setUser(updatedUser);
-            localStorage.setItem('nampdtech-user', JSON.stringify(updatedUser));
         }
     }
   }

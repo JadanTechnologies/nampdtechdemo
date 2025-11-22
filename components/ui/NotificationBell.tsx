@@ -39,14 +39,14 @@ const NotificationBell: React.FC = () => {
         <div className="relative inline-flex">
             <button
                 ref={trigger}
-                className={`w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 transition duration-150 rounded-full ${isDropdownOpen && 'bg-slate-200'}`}
+                className={`w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition duration-150 rounded-full ${isDropdownOpen && 'bg-slate-200 dark:bg-gray-600'}`}
                 aria-haspopup="true"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 aria-expanded={isDropdownOpen}
             >
                 <span className="sr-only">Notifications</span>
                 {/* Bell Icon */}
-                <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="w-5 h-5 text-gray-500 dark:text-gray-300" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M10 2a6 6 0 00-6 6v3.586l-1.707 1.707A1 1 0 003 15h14a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
                 </svg>
                 {unreadCount > 0 && (
@@ -59,30 +59,30 @@ const NotificationBell: React.FC = () => {
             {isDropdownOpen && (
                  <div
                     ref={dropdown}
-                    className="origin-top-right z-10 absolute top-full right-0 -mr-48 sm:mr-0 min-w-80 bg-white border border-slate-200 py-1.5 rounded-lg shadow-lg overflow-hidden mt-1"
+                    className="origin-top-right z-10 absolute top-full right-0 -mr-48 sm:mr-0 min-w-80 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 py-1.5 rounded-lg shadow-lg overflow-hidden mt-1"
                 >
-                    <div className="text-xs font-semibold text-slate-400 uppercase pt-1.5 pb-2 px-4">Notifications</div>
+                    <div className="text-xs font-semibold text-slate-400 dark:text-gray-500 uppercase pt-1.5 pb-2 px-4">Notifications</div>
                      <ul>
                         {notifications.slice(0, 5).map(notification => (
-                            <li key={notification.id} className={`border-b border-slate-200 last:border-0 ${!notification.read ? 'bg-blue-50' : ''}`}>
+                            <li key={notification.id} className={`border-b border-slate-200 dark:border-gray-700 last:border-0 ${!notification.read ? 'bg-blue-50 dark:bg-blue-900/50' : ''}`}>
                                 <Link
-                                    className="block py-2 px-4 hover:bg-slate-50"
+                                    className="block py-2 px-4 hover:bg-slate-50 dark:hover:bg-gray-700"
                                     to={notification.link || '#'}
                                     onClick={() => setIsDropdownOpen(false)}
                                 >
-                                    <span className="block text-sm mb-2">
+                                    <span className="block text-sm mb-2 text-gray-800 dark:text-gray-200">
                                         {notification.message}
                                     </span>
-                                    <span className="block text-xs font-medium text-slate-400">
+                                    <span className="block text-xs font-medium text-slate-400 dark:text-gray-500">
                                         {new Date(notification.date).toLocaleString()}
                                     </span>
                                 </Link>
                             </li>
                         ))}
                     </ul>
-                     {notifications.length === 0 && <div className="text-center py-4 text-sm text-gray-500">No new notifications.</div>}
+                     {notifications.length === 0 && <div className="text-center py-4 text-sm text-gray-500 dark:text-gray-400">No new notifications.</div>}
                     {unreadCount > 0 && (
-                        <div className="py-2 px-4 border-t border-slate-200 bg-slate-50">
+                        <div className="py-2 px-4 border-t border-slate-200 dark:border-gray-700 bg-slate-50 dark:bg-gray-900/50">
                            <button onClick={handleMarkAllRead} className="text-xs font-bold text-primary hover:underline w-full text-center">
                                 Mark all as read
                            </button>

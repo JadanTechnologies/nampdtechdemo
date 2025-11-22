@@ -75,17 +75,17 @@ const CommunicationPage: React.FC = () => {
                 onClose={() => setToastMessage(null)} 
                 />
             )}
-            <h1 className="text-3xl font-bold text-dark mb-6">Send Communication</h1>
-            <div className="bg-white p-8 rounded-lg shadow-lg max-w-4xl mx-auto">
+            <h1 className="text-3xl font-bold text-dark dark:text-gray-100 mb-6">Send Communication</h1>
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-w-4xl mx-auto">
                 <form onSubmit={handleSubmit}>
                      <div className="mb-6">
-                        <label htmlFor="template" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="template" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Load from Template (Optional)
                         </label>
                         <select
                             id="template"
                             onChange={handleTemplateChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary transition"
+                            className="w-full px-4 py-2 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white rounded-md focus:ring-secondary focus:border-secondary transition"
                         >
                             <option value="">Select a template</option>
                             {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
@@ -93,7 +93,7 @@ const CommunicationPage: React.FC = () => {
                     </div>
 
                     <div className="mb-6">
-                        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Announcement Title
                         </label>
                         <input
@@ -101,14 +101,14 @@ const CommunicationPage: React.FC = () => {
                             id="title"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary transition"
+                            className="w-full px-4 py-2 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white rounded-md focus:ring-secondary focus:border-secondary transition"
                             placeholder="e.g., Annual General Meeting"
                             required
                         />
                     </div>
                     
                     <div className="mb-6">
-                        <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="content" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Message Content
                         </label>
                         <textarea
@@ -116,16 +116,16 @@ const CommunicationPage: React.FC = () => {
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             rows={8}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary transition"
+                            className="w-full px-4 py-2 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white rounded-md focus:ring-secondary focus:border-secondary transition"
                             placeholder="Enter the full details of your announcement here..."
                             required
                         />
                          {/* FIX: Simplified the placeholder text expression to avoid potential parsing issues. */}
-                         <p className="text-xs text-gray-500 mt-1">You can use placeholders like {'{{fullName}}'} or {'{{email}}'}.</p>
+                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">You can use placeholders like {'{{fullName}}'} or {'{{email}}'}.</p>
                     </div>
 
                     <div className="mb-6">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Target Audience (Select at least one)
                         </label>
                         <div className="flex flex-wrap gap-4">
@@ -137,7 +137,7 @@ const CommunicationPage: React.FC = () => {
                                         onChange={() => handleRoleChange(role)}
                                         className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
                                     />
-                                    <span className="text-gray-700">{role}s</span>
+                                    <span className="text-gray-700 dark:text-gray-300">{role}s</span>
                                 </label>
                             ))}
                         </div>
