@@ -1,8 +1,8 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import { BrandingProvider } from './context/BrandingContext'; // New Import
+import { BrandingProvider, useBranding } from './context/BrandingContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -19,10 +19,26 @@ import LandingPage from './pages/LandingPage';
 import SettingsPage from './pages/SettingsPage';
 import { UserRole } from './types';
 
+// Component to handle dynamic favicon updates
+const FaviconUpdater: React.FC = () => {
+  const { branding } = useBranding();
+
+  useEffect(() => {
+    const favicon = document.querySelector('link[rel="icon"]');
+    if (favicon && branding.faviconUrl) {
+      favicon.setAttribute('href', branding.faviconUrl);
+    }
+  }, [branding.faviconUrl]);
+
+  return null; // This component doesn't render anything
+}
+
+
 function App() {
   return (
     <AuthProvider>
       <BrandingProvider>
+        <FaviconUpdater />
         <HashRouter>
           <Routes>
             <Route path="/" element={<LandingPage />} />

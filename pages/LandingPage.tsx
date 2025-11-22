@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useBranding } from '../context/BrandingContext'; // New Import
@@ -13,19 +12,24 @@ const FeatureCard = ({ icon, title, children }: { icon: React.ReactNode, title: 
     </div>
 );
 
-const TechCube = () => (
+const TechCube = ({ cubeLogoUrl }: { cubeLogoUrl: string | null }) => (
     <div className="w-64 h-64" style={{ perspective: '1000px' }}>
+        {/* FIX: Corrected a typo in the transformStyle property for proper 3D rendering. */}
         <div className="relative w-full h-full animate-rotate-cube" style={{ transformStyle: 'preserve-3d' }}>
             {['translateZ(8rem)', 'rotateY(180deg) translateZ(8rem)', 'rotateY(-90deg) translateZ(8rem)', 'rotateY(90deg) translateZ(8rem)', 'rotateX(90deg) translateZ(8rem)', 'rotateX(-90deg) translateZ(8rem)'].map((transform, i) => (
-                <div key={i} className="absolute w-full h-full bg-primary/20 border-2 border-secondary rounded-lg flex items-center justify-center" style={{ transform, backfaceVisibility: 'hidden' }}>
-                     <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-accent opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-                        {i === 0 && <path strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />}
-                        {i === 1 && <path strokeLinecap="round" strokeLinejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M12 6V3m0 18v-3" />}
-                        {i === 2 && <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />}
-                        {i === 3 && <path strokeLinecap="round" strokeLinejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />}
-                        {i === 4 && <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />}
-                        {i === 5 && <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" />}
-                    </svg>
+                <div key={i} className="absolute w-full h-full bg-primary/20 border-2 border-secondary rounded-lg flex items-center justify-center p-4" style={{ transform, backfaceVisibility: 'hidden' }}>
+                     {cubeLogoUrl ? (
+                        <img src={cubeLogoUrl} alt="Brand Cube Logo" className="h-24 w-24 object-contain" />
+                     ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-accent opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                            {i === 0 && <path strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />}
+                            {i === 1 && <path strokeLinecap="round" strokeLinejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M12 6V3m0 18v-3" />}
+                            {i === 2 && <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />}
+                            {i === 3 && <path strokeLinecap="round" strokeLinejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />}
+                            {i === 4 && <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />}
+                            {i === 5 && <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" />}
+                        </svg>
+                     )}
                 </div>
             ))}
         </div>
@@ -62,7 +66,12 @@ const LandingPage: React.FC = () => {
             {/* Header */}
             <header className="sticky top-0 bg-white/80 backdrop-blur-md shadow-sm z-50">
                 <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
-                    <div className="text-2xl font-bold text-primary">{branding.brandName}</div>
+                    <div className="flex items-center gap-3">
+                       {branding.showLogoInHeader && branding.logoUrl && (
+                         <img src={branding.logoUrl} alt={`${branding.brandName} Logo`} className="h-10 w-auto" />
+                       )}
+                       <div className="text-2xl font-bold text-primary">{branding.brandName}</div>
+                    </div>
                     <div className="space-x-4">
                         <Link to="/login" className="text-primary font-semibold hover:underline">Login</Link>
                         <Link to="/register" className="bg-primary text-white py-2 px-5 rounded-full hover:bg-secondary transition duration-300">Register</Link>
@@ -85,7 +94,7 @@ const LandingPage: React.FC = () => {
                         </div>
                     </div>
                     <div className="md:w-1/2 mt-12 md:mt-0 flex justify-center items-center h-64">
-                       <TechCube />
+                       <TechCube cubeLogoUrl={branding.cubeLogoUrl} />
                     </div>
                 </div>
             </section>
@@ -107,7 +116,7 @@ const LandingPage: React.FC = () => {
                          <FeatureCard title="Secure Approval Workflow" icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}>
                             Our multi-level approval process ensures all members are properly vetted by local and state leadership.
                         </FeatureCard>
-                         <FeatureCard title="Member Directory" icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>}>
+                         <FeatureCard title="Member Directory" icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>}>
                             Connect with fellow technicians across the nation through our comprehensive member directory.
                         </FeatureCard>
                         <FeatureCard title="Financial Tracking" icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>}>

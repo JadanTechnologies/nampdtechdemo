@@ -4,9 +4,12 @@ import React, { createContext, useState, useEffect, ReactNode, useContext } from
 export interface Branding {
   brandName: string;
   logoUrl: string | null;
+  faviconUrl: string | null;
+  cubeLogoUrl: string | null;
   contactEmail: string;
   contactPhone: string;
   address: string;
+  showLogoInHeader: boolean;
 }
 
 interface BrandingContextType {
@@ -18,9 +21,12 @@ interface BrandingContextType {
 const defaultBranding: Branding = {
     brandName: 'NAMPDTech',
     logoUrl: null,
+    faviconUrl: null,
+    cubeLogoUrl: null,
     contactEmail: 'info@nampdtech.org',
     contactPhone: '+234 123 456 7890',
-    address: '123 Tech Road, Ikeja, Lagos, Nigeria'
+    address: '123 Tech Road, Ikeja, Lagos, Nigeria',
+    showLogoInHeader: false,
 };
 
 export const BrandingContext = createContext<BrandingContextType | undefined>(undefined);
