@@ -168,6 +168,9 @@ export interface MaintenanceSettings {
 
 export interface ConferenceSettings {
     provider: 'agora' | 'zego' | 'none';
+    status: 'idle' | 'active';
+    title: string;
+    invitedUserIds: string[];
 }
 
 export interface CommunityHubSettings {

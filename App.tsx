@@ -1,4 +1,5 @@
 
+
 import React, { useEffect } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 // FIX: `useAuth` is imported from `hooks/useAuth`, not from `context/AuthContext`.
@@ -31,7 +32,7 @@ import PaymentApprovalsPage from './pages/PaymentApprovalsPage';
 import CommunicationPage from './pages/CommunicationPage';
 import AdminActionsPage from './pages/AdminActionsPage';
 import RolesAndPermissionsPage from './pages/RolesAndPermissionsPage';
-import ConferencePage from './pages/ConferencePage';
+import ConferenceSwitchPage from './pages/ConferenceSwitchPage';
 import TemplatesPage from './pages/TemplatesPage';
 import MaintenancePage from './pages/MaintenancePage';
 import VerifyMemberPage from './pages/VerifyMemberPage';
@@ -171,8 +172,8 @@ function App() {
                         <Route 
                           path="/conference" 
                           element={
-                            <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
-                              <ConferencePage />
+                            <ProtectedRoute>
+                              <ConferenceSwitchPage />
                             </ProtectedRoute>
                           } 
                         />

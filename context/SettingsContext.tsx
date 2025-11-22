@@ -54,7 +54,10 @@ const defaultSettings: Settings = {
         monnifyContractCode: '',
     },
     conference: {
-        provider: 'none'
+        provider: 'none',
+        status: 'idle',
+        title: '',
+        invitedUserIds: [],
     },
     communityHub: {
         enabled: true,
