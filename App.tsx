@@ -33,6 +33,9 @@ import RolesAndPermissionsPage from './pages/RolesAndPermissionsPage';
 import ConferencePage from './pages/ConferencePage';
 import TemplatesPage from './pages/TemplatesPage';
 import MaintenancePage from './pages/MaintenancePage';
+import VerifyMemberPage from './pages/VerifyMemberPage';
+import CommunityHubPage from './pages/CommunityHubPage';
+
 
 import { UserRole } from './types';
 import { checkAndCreateAnnualDues } from './services/mockApi';
@@ -102,6 +105,8 @@ function App() {
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/verify" element={<VerifyMemberPage />} />
+
                     
                     <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
                       <Route path="/dashboard" element={<DashboardPage />} />
@@ -120,6 +125,7 @@ function App() {
                       <Route path="/id-card" element={<IdCardPage />} />
                       <Route path="/certificate" element={<CertificatePage />} />
                       <Route path="/payments" element={<PaymentsPage />} />
+                      <Route path="/community" element={<CommunityHubPage />} />
                       <Route 
                         path="/settings" 
                         element={

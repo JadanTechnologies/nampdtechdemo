@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSettings, Settings } from '../context/SettingsContext';
 import { useBranding, Branding } from '../context/BrandingContext';
 import Toast from '../components/ui/Toast';
+import { NIGERIAN_STATES } from '../constants';
 
 const SettingsPage: React.FC = () => {
   const { branding, updateBranding } = useBranding();
@@ -50,6 +51,22 @@ const SettingsPage: React.FC = () => {
         return { ...prev, [name]: checked };
     });
   };
+
+   const handleStateToggle = (state: string, checked: boolean) => {
+        setSettingsForm(prev => {
+            const currentStates = prev.communityHub.enabledStates;
+            const newStates = checked
+                ? [...currentStates, state]
+                : currentStates.filter(s => s !== state);
+            return {
+                ...prev,
+                communityHub: {
+                    ...prev.communityHub,
+                    enabledStates: newStates
+                }
+            };
+        });
+    };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof Branding) => {
     const file = e.target.files?.[0];
@@ -239,6 +256,34 @@ const SettingsPage: React.FC = () => {
                     <button type="submit" className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">Save API Keys</button>
                 </form>
             </div>
+
+            {/* Community Hub Settings */}
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+                <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">Community Hub</h2>
+                <form onSubmit={(e) => handleSave(e, 'settings', 'Community Hub settings saved!')} className="space-y-4">
+                     <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-md">
+                        <label htmlFor="communityHub.enabled" className="font-medium text-blue-800">Enable Community Hub</label>
+                        <input type="checkbox" id="communityHub.enabled" name="communityHub.enabled" checked={settingsForm.communityHub.enabled} onChange={(e) => handleToggleChange(e, 'settings')} />
+                    </div>
+                     <div>
+                        <label className="block text-sm font-medium text-gray-700">Enabled States</label>
+                        <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-60 overflow-y-auto p-2 border rounded-md">
+                            {NIGERIAN_STATES.map(state => (
+                                <label key={state} className="flex items-center gap-2 text-sm">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={settingsForm.communityHub.enabledStates.includes(state)}
+                                        onChange={(e) => handleStateToggle(state, e.target.checked)}
+                                    />
+                                    {state}
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+                    <button type="submit" className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">Save Community Settings</button>
+                </form>
+            </div>
+
 
             {/* Payment Gateway Settings */}
             <div className="bg-white p-6 rounded-lg shadow-lg">

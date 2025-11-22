@@ -7,6 +7,8 @@ interface DigitalIdCardProps {
 
 const DigitalIdCard: React.FC<DigitalIdCardProps> = ({ member }) => {
   const [isFlipped, setIsFlipped] = useState(false);
+  
+  const verificationUrl = `${window.location.origin}${window.location.pathname}#/verify?id=${member.id}`;
 
   return (
     <div 
@@ -48,7 +50,7 @@ const DigitalIdCard: React.FC<DigitalIdCardProps> = ({ member }) => {
                 </div>
             </div>
             <div className="flex flex-col items-center">
-                 <img src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=Nampdtech-Member-${member.id}`} alt="QR Code" className="w-32 h-32" />
+                 <img src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(verificationUrl)}`} alt="QR Code" className="w-32 h-32" />
                  <p className="text-xs text-gray-500 mt-2 text-center">Scan to verify membership</p>
             </div>
             <div className="text-xs text-gray-400 text-center border-t pt-2 mt-2">

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
-import { MaintenanceSettings, ApiKeySettings, ConferenceSettings } from '../types';
+import { MaintenanceSettings, ApiKeySettings, ConferenceSettings, CommunityHubSettings } from '../types';
+import { NIGERIAN_STATES } from '../constants';
 
 export interface PaymentGatewaySettings {
   paystackEnabled: boolean;
@@ -13,6 +14,7 @@ export interface Settings {
   maintenanceMode: MaintenanceSettings;
   apiKeys: ApiKeySettings;
   conference: ConferenceSettings;
+  communityHub: CommunityHubSettings;
 }
 
 interface SettingsContextType {
@@ -53,6 +55,10 @@ const defaultSettings: Settings = {
     },
     conference: {
         provider: 'none'
+    },
+    communityHub: {
+        enabled: true,
+        enabledStates: NIGERIAN_STATES,
     }
 };
 
@@ -75,6 +81,7 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
           maintenanceMode: { ...prev.maintenanceMode, ...parsedSettings.maintenanceMode },
           apiKeys: { ...prev.apiKeys, ...parsedSettings.apiKeys },
           conference: { ...prev.conference, ...parsedSettings.conference },
+          communityHub: { ...prev.communityHub, ...parsedSettings.communityHub },
         }));
       } else {
         localStorage.setItem('nampdtech-settings', JSON.stringify(defaultSettings));

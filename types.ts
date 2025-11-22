@@ -59,6 +59,8 @@ export interface MemberApplication {
   status: MembershipStatus;
   accountStatus: AccountStatus;
   registrationDate: string;
+  skills?: string[];
+  forumStatus: 'active' | 'muted' | 'banned';
 }
 
 export interface Payment {
@@ -100,6 +102,19 @@ export interface Communication {
     targetRoles: (UserRole | string)[]; // Can target base roles or custom role IDs
     author: string;
     date: string;
+}
+
+export interface ChatMessage {
+    id: string;
+    channelId: string; // e.g., 'Lagos' or 'General'
+    senderId: string;
+    senderName: string;
+    senderRole: UserRole;
+    content: string;
+    type: 'text' | 'image' | 'voice' | 'file';
+    timestamp: string;
+    fileUrl?: string;
+    fileName?: string;
 }
 
 // For RBAC system
@@ -153,6 +168,12 @@ export interface MaintenanceSettings {
 export interface ConferenceSettings {
     provider: 'agora' | 'zego' | 'none';
 }
+
+export interface CommunityHubSettings {
+    enabled: boolean;
+    enabledStates: string[];
+}
+
 
 export interface ApiKeySettings {
     // Communication

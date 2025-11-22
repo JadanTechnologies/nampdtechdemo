@@ -1,6 +1,6 @@
 
-import { MemberApplication, MembershipStatus, Payment, PaymentGateway, PaymentStatus, User, AdminAction, Communication, UserRole, Role, Template, InAppNotification, ALL_PERMISSIONS } from '../types';
-import { MOCK_MEMBERS, MOCK_PAYMENTS, MOCK_USERS } from '../constants';
+import { MemberApplication, MembershipStatus, Payment, PaymentGateway, PaymentStatus, User, AdminAction, Communication, UserRole, Role, Template, InAppNotification, ALL_PERMISSIONS, ChatMessage } from '../types';
+import { MOCK_MEMBERS, MOCK_PAYMENTS, MOCK_USERS, NIGERIAN_STATES } from '../constants';
 
 // Initialize data in localStorage if it doesn't exist
 const initializeData = <T,>(key: string, mockData: T[]): T[] => {
@@ -32,6 +32,17 @@ let communications: Communication[] = initializeData('nampdtech-communications',
 let roles: Role[] = initializeData('nampdtech-roles', MOCK_ROLES);
 let templates: Template[] = initializeData('nampdtech-templates', []);
 let notifications: InAppNotification[] = initializeData('nampdtech-notifications', []);
+let chatMessages: ChatMessage[] = initializeData('nampdtech-chat-messages', []);
+
+// Seed initial chat messages if none exist
+if (chatMessages.length === 0) {
+    chatMessages = [
+        { id: 'msg-1', channelId: 'Lagos', senderId: 'user-004', senderName: 'Bisi Adekunle', senderRole: UserRole.MEMBER, content: 'Hello everyone in Lagos! Glad to be here.', type: 'text', timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString() },
+        { id: 'msg-2', channelId: 'Lagos', senderId: 'user-003', senderName: 'Chairman (Lagos)', senderRole: UserRole.CHAIRMAN, content: 'Welcome Bisi! Feel free to ask any questions.', type: 'text', timestamp: new Date(Date.now() - 1000 * 60 * 4).toISOString() },
+        { id: 'msg-3', channelId: 'General', senderId: 'user-006', senderName: 'Musa Ibrahim', senderRole: UserRole.MEMBER, content: 'Good morning all technicians.', type: 'text', timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString() },
+    ];
+    localStorage.setItem('nampdtech-chat-messages', JSON.stringify(chatMessages));
+}
 
 
 const saveData = <T,>(key: string, data: T[]) => {
@@ -64,16 +75,19 @@ export const getMembers = async (): Promise<MemberApplication[]> => {
 
 export const getMemberById = async (id: string): Promise<MemberApplication | undefined> => {
   await delay(200);
-  return members.find(m => m.id === id);
+  // Re-read from storage to ensure we have the latest data, as this can be called from a public page
+  const currentMembers: MemberApplication[] = initializeData('nampdtech-members', MOCK_MEMBERS);
+  return currentMembers.find(m => m.id === id);
 }
 
-export const addMember = async (application: Omit<MemberApplication, 'id' | 'status' | 'registrationDate' | 'accountStatus'>): Promise<MemberApplication> => {
+export const addMember = async (application: Omit<MemberApplication, 'id' | 'status' | 'registrationDate' | 'accountStatus' | 'forumStatus'>): Promise<MemberApplication> => {
   await delay(1000);
   const newMember: MemberApplication = {
     ...application,
     id: `mem-${Date.now()}`,
     status: MembershipStatus.PENDING_CHAIRMAN,
     accountStatus: 'Active',
+    forumStatus: 'active',
     registrationDate: new Date().toISOString(),
   };
   members.push(newMember);
@@ -92,6 +106,9 @@ export const updateMember = async (id: string, updates: Partial<MemberApplicatio
 
     if (updates.status && updates.status !== oldStatus) {
          createNotification(`Membership status for ${members[memberIndex].fullName} updated to ${updates.status}.`, `/members`);
+    }
+    if (updates.forumStatus) {
+        createNotification(`Forum status for ${members[memberIndex].fullName} updated to ${updates.forumStatus}.`);
     }
 
     return members[memberIndex];
@@ -297,6 +314,31 @@ export const markAllNotificationsAsRead = async (): Promise<InAppNotification[]>
     saveData('nampdtech-notifications', notifications);
     return [...notifications];
 };
+
+// Community Hub Functions
+export const getChannels = async (): Promise<string[]> => {
+    await delay(100);
+    return ['General', ...NIGERIAN_STATES];
+}
+
+export const getMessages = async (channelId: string): Promise<ChatMessage[]> => {
+    await delay(300);
+    return chatMessages
+        .filter(m => m.channelId === channelId)
+        .sort((a,b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+}
+
+export const addMessage = async (message: Omit<ChatMessage, 'id' | 'timestamp'>): Promise<ChatMessage> => {
+    await delay(200);
+    const newMessage: ChatMessage = {
+        ...message,
+        id: `msg-${Date.now()}`,
+        timestamp: new Date().toISOString()
+    };
+    chatMessages.push(newMessage);
+    saveData('nampdtech-chat-messages', chatMessages);
+    return newMessage;
+}
 
 
 // Simulated Cron Job
