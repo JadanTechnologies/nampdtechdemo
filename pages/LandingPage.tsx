@@ -67,10 +67,11 @@ const LandingPage: React.FC = () => {
             <header className="sticky top-0 bg-white/80 backdrop-blur-md shadow-sm z-50">
                 <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
                     <div className="flex items-center gap-3">
-                       {branding.showLogoInHeader && branding.logoUrl && (
+                       {(branding.showLogoInHeader && branding.logoUrl) ? (
                          <img src={branding.logoUrl} alt={`${branding.brandName} Logo`} className="h-10 w-auto" />
+                       ) : (
+                         <div className="text-2xl font-bold text-primary">{branding.brandName}</div>
                        )}
-                       <div className="text-2xl font-bold text-primary">{branding.brandName}</div>
                     </div>
                     <div className="space-x-4">
                         <Link to="/login" className="text-primary font-semibold hover:underline">Login</Link>

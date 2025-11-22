@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 
 export interface Branding {
@@ -19,7 +18,7 @@ interface BrandingContextType {
 }
 
 const defaultBranding: Branding = {
-    brandName: 'NAMPDTech',
+    brandName: 'Nampdtech',
     logoUrl: null,
     faviconUrl: null,
     cubeLogoUrl: null,

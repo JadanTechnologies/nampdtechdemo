@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -113,10 +112,8 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, sidebarE
           </button>
           {/* Logo */}
           <NavLink to="/dashboard" className="block">
-            {branding.logoUrl ? (
+            {branding.logoUrl && (
                 <img src={branding.logoUrl} alt={`${branding.brandName} Logo`} className={`h-10 w-auto transition-all duration-200 ${sidebarExpanded ? 'lg:w-32' : 'lg:w-10'} 2xl:w-32`} />
-            ) : (
-                <span className="text-white text-2xl font-bold">{branding.brandName}</span>
             )}
           </NavLink>
         </div>

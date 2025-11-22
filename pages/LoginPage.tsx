@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
@@ -39,7 +38,7 @@ const LoginPage: React.FC = () => {
     <div className="min-h-screen bg-light flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-md">
             <div className="text-center mb-8">
-                <h1 className="text-4xl font-bold text-primary">NAMPDTech Portal</h1>
+                <h1 className="text-4xl font-bold text-primary">Nampdtech Portal</h1>
                 <p className="text-dark/70 mt-2">National Association of Mobile Phone Technicians</p>
             </div>
 

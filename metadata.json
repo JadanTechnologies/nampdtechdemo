@@ -1,6 +1,6 @@
 {
-  "name": "NAMPDTech Member Portal",
-  "description": "A comprehensive web portal for NAMPDTech featuring multi-tiered user roles, AI-powered registration, a multi-level approval system, payment processing, and dynamic member-facing features and admin dashboards.",
+  "name": "Nampdtech Member Portal",
+  "description": "A comprehensive web portal for Nampdtech featuring multi-tiered user roles, AI-powered registration, a multi-level approval system, payment processing, and dynamic member-facing features and admin dashboards.",
   "requestFramePermissions": [
     "camera"
   ]

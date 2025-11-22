@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 
 export interface PaymentGatewaySettings {
@@ -9,7 +8,6 @@ export interface PaymentGatewaySettings {
 }
 
 export interface Settings {
-  geminiApiKey: string;
   paymentGateways: PaymentGatewaySettings;
 }
 
@@ -20,7 +18,6 @@ interface SettingsContextType {
 }
 
 const defaultSettings: Settings = {
-    geminiApiKey: '',
     paymentGateways: {
         paystackEnabled: true,
         monnifyEnabled: true,

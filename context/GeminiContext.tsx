@@ -1,7 +1,13 @@
-
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
-import { useSettings } from './SettingsContext';
 import { GoogleGenAI } from '@google/genai';
+
+// Per guidelines, assume `process.env.API_KEY` is available in the execution context.
+// This declaration helps TypeScript understand `process` in a browser-like environment.
+declare const process: {
+    env: {
+        [key: string]: string | undefined;
+    };
+};
 
 interface GeminiContextType {
   ai: GoogleGenAI | null;
@@ -11,14 +17,16 @@ interface GeminiContextType {
 export const GeminiContext = createContext<GeminiContextType | undefined>(undefined);
 
 export const GeminiProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { settings } = useSettings();
   const [ai, setAi] = useState<GoogleGenAI | null>(null);
   const [isGeminiAvailable, setIsGeminiAvailable] = useState(false);
 
   useEffect(() => {
-    if (settings.geminiApiKey) {
+    // Per guidelines, API key must be from process.env.API_KEY
+    const apiKey = typeof process !== 'undefined' && process.env ? process.env.API_KEY : undefined;
+
+    if (apiKey) {
       try {
-        const genAI = new GoogleGenAI({ apiKey: settings.geminiApiKey });
+        const genAI = new GoogleGenAI({ apiKey });
         setAi(genAI);
         setIsGeminiAvailable(true);
         console.log("Gemini AI client initialized successfully.");
@@ -30,9 +38,9 @@ export const GeminiProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     } else {
       setAi(null);
       setIsGeminiAvailable(false);
-      console.warn("Gemini API key is not set. OCR functionality will be disabled.");
+      console.warn("Gemini API key not found. OCR functionality will be disabled.");
     }
-  }, [settings.geminiApiKey]);
+  }, []); // Run only once on mount
 
   return (
     <GeminiContext.Provider value={{ ai, isGeminiAvailable }}>

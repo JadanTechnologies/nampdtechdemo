@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NAMPDTech Member Portal</title>
+    <title>Nampdtech Member Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -20,6 +20,7 @@
             animation: {
               'flip-card': 'flip 1s forwards',
               'rotate-cube': 'rotate-cube 20s infinite linear',
+              'fade-in-down': 'fade-in-down 0.5s ease-out forwards',
             },
             keyframes: {
               flip: {
@@ -29,6 +30,16 @@
               'rotate-cube': {
                 '0%': { transform: 'rotateX(0deg) rotateY(0deg)' },
                 '100%': { transform: 'rotateX(360deg) rotateY(360deg)' },
+              },
+              'fade-in-down': {
+                '0%': {
+                  opacity: '0',
+                  transform: 'translateY(-20px)'
+                },
+                '100%': {
+                  opacity: '1',
+                  transform: 'translateY(0)'
+                },
               },
             },
           },

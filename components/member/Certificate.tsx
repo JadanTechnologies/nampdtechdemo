@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MemberApplication } from '../../types';
 
@@ -11,7 +10,7 @@ const Certificate: React.FC<CertificateProps> = ({ member }) => {
     <div className="w-full aspect-[11/8.5] border-8 border-primary bg-light p-8 flex flex-col relative overflow-hidden">
       {/* Background watermark */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <h1 className="text-8xl font-black text-primary opacity-5 transform rotate-[-30deg]">NAMPDTech</h1>
+        <h1 className="text-8xl font-black text-primary opacity-5 transform rotate-[-30deg]">Nampdtech</h1>
       </div>
 
       <div className="relative z-10 flex flex-col h-full">
@@ -26,7 +25,7 @@ const Certificate: React.FC<CertificateProps> = ({ member }) => {
             having met all the requirements and been approved by the board, is hereby recognized as an active and registered member of the
           </p>
           <h3 className="mt-4 text-3xl font-bold text-dark">
-            National Association of Mobile Phone Technicians (NAMPDTech)
+            National Association of Mobile Phone Technicians (Nampdtech)
           </h3>
         </div>
 

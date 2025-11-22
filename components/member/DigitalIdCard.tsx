@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { MemberApplication } from '../../types';
 
@@ -20,7 +19,7 @@ const DigitalIdCard: React.FC<DigitalIdCardProps> = ({ member }) => {
         {/* Front of the Card */}
         <div className="absolute w-full h-full backface-hidden bg-white rounded-2xl shadow-2xl overflow-hidden border-4 border-primary">
             <div className="bg-primary h-28 flex items-center justify-center text-white p-4">
-                <h1 className="text-xl font-bold text-center">NAMPDTech Member</h1>
+                <h1 className="text-xl font-bold text-center">Nampdtech Member</h1>
             </div>
             <div className="flex flex-col items-center p-6 -mt-16">
                 <img src={member.passportPhotoUrl || `https://i.pravatar.cc/150?u=${member.id}`} alt="Member passport" className="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover" />
@@ -49,11 +48,11 @@ const DigitalIdCard: React.FC<DigitalIdCardProps> = ({ member }) => {
                 </div>
             </div>
             <div className="flex flex-col items-center">
-                 <img src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=NAMPDTech-Member-${member.id}`} alt="QR Code" className="w-32 h-32" />
+                 <img src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=Nampdtech-Member-${member.id}`} alt="QR Code" className="w-32 h-32" />
                  <p className="text-xs text-gray-500 mt-2 text-center">Scan to verify membership</p>
             </div>
             <div className="text-xs text-gray-400 text-center border-t pt-2 mt-2">
-                This card is the property of NAMPDTech and must be returned upon request.
+                This card is the property of Nampdtech and must be returned upon request.
             </div>
         </div>
       </div>

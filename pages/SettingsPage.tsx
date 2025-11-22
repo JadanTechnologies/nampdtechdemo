@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { useSettings, Settings } from '../context/SettingsContext';
 import { MOCK_USERS } from '../constants';
 import { UserRole } from '../types';
 import { useBranding, Branding } from '../context/BrandingContext';
+import Toast from '../components/ui/Toast';
 
 const SettingsPage: React.FC = () => {
   const { branding, updateBranding } = useBranding();
@@ -11,6 +11,7 @@ const SettingsPage: React.FC = () => {
   
   const [brandingForm, setBrandingForm] = useState<Branding>(branding);
   const [settingsForm, setSettingsForm] = useState<Settings>(settings);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   
   useEffect(() => {
     setBrandingForm(branding);
@@ -44,14 +45,14 @@ const SettingsPage: React.FC = () => {
   const handleBrandingSave = (e: React.FormEvent) => {
       e.preventDefault();
       updateBranding(brandingForm);
-      alert('Branding settings saved!');
+      setToastMessage('Branding settings saved successfully!');
   }
 
   const handleSettingsInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
       const keys = name.split('.');
       if (keys.length === 2) {
-          const [parent, child] = keys;
+          const [parent, child] = keys as [keyof Settings, string];
           setSettingsForm(prev => ({
               ...prev,
               [parent]: {
@@ -59,8 +60,6 @@ const SettingsPage: React.FC = () => {
                   [child]: value,
               }
           }));
-      } else {
-        setSettingsForm(prev => ({...prev, [name]: value }));
       }
   }
 
@@ -68,7 +67,7 @@ const SettingsPage: React.FC = () => {
       const { name, checked } = e.target;
       const keys = name.split('.');
       if (keys.length === 2) {
-          const [parent, child] = keys;
+          const [parent, child] = keys as [keyof Settings, string];
           setSettingsForm(prev => ({
               ...prev,
               [parent]: {
@@ -79,16 +78,23 @@ const SettingsPage: React.FC = () => {
       }
   }
 
-  const handleSettingsSave = (e: React.FormEvent) => {
+  const handleSettingsSave = (e: React.FormEvent, message: string) => {
       e.preventDefault();
       updateSettings(settingsForm);
-      alert('Settings saved!');
+      setToastMessage(message);
   }
   
   const adminUsers = MOCK_USERS.filter(u => u.role !== UserRole.MEMBER);
 
   return (
     <div>
+      {toastMessage && (
+        <Toast 
+          message={toastMessage} 
+          type="success" 
+          onClose={() => setToastMessage(null)} 
+        />
+      )}
       <h1 className="text-3xl font-bold text-dark mb-6">Platform Settings</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
@@ -140,23 +146,10 @@ const SettingsPage: React.FC = () => {
         </div>
         
         <div className="space-y-8">
-            {/* API Settings */}
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">API Integrations</h2>
-                <form onSubmit={handleSettingsSave} className="space-y-4">
-                    <div>
-                        <label htmlFor="geminiApiKey" className="block text-sm font-medium text-gray-700">Google Gemini API Key</label>
-                        <input type="password" name="geminiApiKey" id="geminiApiKey" value={settingsForm.geminiApiKey || ''} onChange={handleSettingsInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-                        <p className="text-xs text-gray-500 mt-1">This key is required for the NIN slip OCR feature.</p>
-                    </div>
-                    <button type="submit" className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">Save API Keys</button>
-                </form>
-            </div>
-
             {/* Payment Gateway Settings */}
             <div className="bg-white p-6 rounded-lg shadow-lg">
                 <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">Payment Gateways</h2>
-                <form onSubmit={handleSettingsSave} className="space-y-4">
+                <form onSubmit={(e) => handleSettingsSave(e, 'Payment settings saved!')} className="space-y-4">
                     <div className="flex items-center justify-between">
                         <label className="font-medium text-gray-700">Enable Paystack</label>
                         <input type="checkbox" name="paymentGateways.paystackEnabled" className="toggle" checked={settingsForm.paymentGateways.paystackEnabled} onChange={handleSettingsToggleChange} />
