@@ -1,7 +1,8 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NIGERIAN_STATES } from '../constants';
+import { NIGERIAN_STATES_AND_LGAS } from '../data/locations';
 import FileUpload from '../components/registration/FileUpload';
 import { performOcrOnNin } from '../services/geminiService';
 import { addMember } from '../services/mockApi';
@@ -22,6 +23,7 @@ const RegisterPage: React.FC = () => {
     businessName: '',
     businessAddress: '',
   });
+  const [lgas, setLgas] = useState<string[]>([]);
   const [files, setFiles] = useState<{ passport: File | null; ninSlip: File | null; businessDoc: File | null }>({
     passport: null,
     ninSlip: null,
@@ -33,6 +35,15 @@ const RegisterPage: React.FC = () => {
   const [submitError, setSubmitError] = useState('');
   const navigate = useNavigate();
   const { ai, isGeminiAvailable } = useGemini();
+
+  useEffect(() => {
+    if (formData.state) {
+      setLgas(NIGERIAN_STATES_AND_LGAS[formData.state] || []);
+      setFormData(prev => ({ ...prev, lga: '' })); // Reset LGA on state change
+    } else {
+      setLgas([]);
+    }
+  }, [formData.state]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -124,7 +135,10 @@ const RegisterPage: React.FC = () => {
               </div>
               <div>
                 <label htmlFor="lga" className="block text-sm font-medium text-gray-700">LGA of Residence</label>
-                <input type="text" name="lga" value={formData.lga} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
+                <select name="lga" value={formData.lga} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required disabled={!formData.state}>
+                    <option value="">{formData.state ? 'Select LGA' : 'Select a state first'}</option>
+                    {lgas.map(lga => <option key={lga} value={lga}>{lga}</option>)}
+                </select>
               </div>
             </div>
           </>

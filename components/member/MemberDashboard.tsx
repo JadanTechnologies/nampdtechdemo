@@ -1,19 +1,29 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { Link, useNavigate } from 'react-router-dom';
-import { MembershipStatus } from '../../types';
+import { Communication, MembershipStatus, UserRole } from '../../types';
 import Spinner from '../ui/Spinner';
+import { getCommunications } from '../../services/mockApi';
 
 const MemberDashboard: React.FC = () => {
   const { user, updateUserMemberDetails } = useAuth();
+  const [announcements, setAnnouncements] = useState<Communication[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     // Refresh user details on mount to get latest status
     updateUserMemberDetails();
+    
+    const fetchAnnouncements = async () => {
+        if (!user) return;
+        const allComms = await getCommunications();
+        const userAnnouncements = allComms.filter(comm => comm.targetRoles.includes(user.role));
+        setAnnouncements(userAnnouncements.slice(0, 3)); // Show latest 3
+    }
+    fetchAnnouncements();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
 
   if (!user || !user.memberDetails) {
     return <div className="flex justify-center items-center h-64"><Spinner size="lg"/></div>;
@@ -74,6 +84,21 @@ const MemberDashboard: React.FC = () => {
     <div>
       <h1 className="text-3xl font-bold text-dark mb-6">Member Dashboard</h1>
       {renderContent()}
+
+      {announcements.length > 0 && (
+          <div className="mt-8">
+              <h2 className="text-2xl font-bold text-dark mb-4">Recent Announcements</h2>
+              <div className="space-y-4">
+                  {announcements.map(comm => (
+                      <div key={comm.id} className="bg-white p-4 rounded-lg shadow-md border-l-4 border-secondary">
+                          <h3 className="font-bold text-dark">{comm.title}</h3>
+                          <p className="text-sm text-gray-600">{comm.content}</p>
+                          <p className="text-xs text-gray-400 mt-2">Posted on {new Date(comm.date).toLocaleDateString()}</p>
+                      </div>
+                  ))}
+              </div>
+          </div>
+      )}
     </div>
   );
 };

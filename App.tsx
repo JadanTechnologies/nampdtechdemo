@@ -21,6 +21,12 @@ import LandingPage from './pages/LandingPage';
 import SettingsPage from './pages/SettingsPage';
 import PaymentApprovalsPage from './pages/PaymentApprovalsPage';
 import { UserRole } from './types';
+import CommunicationPage from './pages/CommunicationPage';
+import AdminActionsPage from './pages/AdminActionsPage';
+import RolesAndPermissionsPage from './pages/RolesAndPermissionsPage';
+import ConferencePage from './pages/ConferencePage';
+import { checkAndCreateAnnualDues } from './services/mockApi';
+
 
 // Component to handle dynamic favicon updates
 const FaviconUpdater: React.FC = () => {
@@ -36,6 +42,23 @@ const FaviconUpdater: React.FC = () => {
   return null; // This component doesn't render anything
 }
 
+// Simulated Cron Job Runner
+const CronJobRunner: React.FC = () => {
+    useEffect(() => {
+        // Run once on initial load
+        checkAndCreateAnnualDues();
+
+        // Then run every hour
+        const interval = setInterval(() => {
+            checkAndCreateAnnualDues();
+        }, 3600000); // 1 hour
+
+        return () => clearInterval(interval);
+    }, []);
+
+    return null;
+}
+
 
 function App() {
   return (
@@ -44,6 +67,7 @@ function App() {
         <GeminiProvider>
           <BrandingProvider>
             <FaviconUpdater />
+            <CronJobRunner />
             <HashRouter>
               <Routes>
                 <Route path="/" element={<LandingPage />} />
@@ -72,6 +96,38 @@ function App() {
                     element={
                       <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
                         <SettingsPage />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/communication" 
+                    element={
+                      <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
+                        <CommunicationPage />
+                      </ProtectedRoute>
+                    } 
+                  />
+                   <Route 
+                    path="/admin-actions" 
+                    element={
+                      <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
+                        <AdminActionsPage />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/roles-permissions" 
+                    element={
+                      <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
+                        <RolesAndPermissionsPage />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/conference" 
+                    element={
+                      <ProtectedRoute roles={[UserRole.SUPER_ADMIN]}>
+                        <ConferencePage />
                       </ProtectedRoute>
                     } 
                   />
