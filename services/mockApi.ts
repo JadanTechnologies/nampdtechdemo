@@ -1,5 +1,5 @@
 
-import { MemberApplication, MembershipStatus, Payment, PaymentGateway, PaymentStatus, User, AdminAction, Communication, UserRole } from '../types';
+import { MemberApplication, MembershipStatus, Payment, PaymentGateway, PaymentStatus, User, AdminAction, Communication, UserRole, Role, Template, InAppNotification, ALL_PERMISSIONS } from '../types';
 import { MOCK_MEMBERS, MOCK_PAYMENTS, MOCK_USERS } from '../constants';
 
 // Initialize data in localStorage if it doesn't exist
@@ -18,10 +18,20 @@ const initializeData = <T,>(key: string, mockData: T[]): T[] => {
   }
 };
 
+const MOCK_ROLES: Role[] = [
+    { id: 'role-super-admin', name: 'Super Admin', description: 'Has all permissions.', permissions: ALL_PERMISSIONS },
+    { id: 'role-state-admin', name: 'State Admin', description: 'Manages members and approvals for a specific state.', permissions: ['manage_members', 'approve_applications', 'view_financials'] },
+    { id: 'role-chairman', name: 'Chairman', description: 'First level of approval for new members.', permissions: ['approve_applications'] },
+    { id: 'role-member', name: 'Member', description: 'Standard member account.', permissions: [] },
+]
+
 let members: MemberApplication[] = initializeData('nampdtech-members', MOCK_MEMBERS);
 let payments: Payment[] = initializeData('nampdtech-payments', MOCK_PAYMENTS);
 let adminActions: AdminAction[] = initializeData('nampdtech-admin-actions', []);
 let communications: Communication[] = initializeData('nampdtech-communications', []);
+let roles: Role[] = initializeData('nampdtech-roles', MOCK_ROLES);
+let templates: Template[] = initializeData('nampdtech-templates', []);
+let notifications: InAppNotification[] = initializeData('nampdtech-notifications', []);
 
 
 const saveData = <T,>(key: string, data: T[]) => {
@@ -30,6 +40,21 @@ const saveData = <T,>(key: string, data: T[]) => {
 
 // Simulate API delay
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+
+// Notification Helper
+const createNotification = (message: string, link?: string) => {
+    const newNotification: InAppNotification = {
+        id: `notif-${Date.now()}`,
+        message,
+        link,
+        read: false,
+        date: new Date().toISOString()
+    };
+    notifications.unshift(newNotification);
+    saveData('nampdtech-notifications', notifications);
+}
+
 
 // Member Functions
 export const getMembers = async (): Promise<MemberApplication[]> => {
@@ -53,6 +78,7 @@ export const addMember = async (application: Omit<MemberApplication, 'id' | 'sta
   };
   members.push(newMember);
   saveData('nampdtech-members', members);
+  createNotification(`New member registration: ${newMember.fullName}`, `/approvals`);
   return newMember;
 };
 
@@ -60,8 +86,14 @@ export const updateMember = async (id: string, updates: Partial<MemberApplicatio
   await delay(500);
   const memberIndex = members.findIndex(m => m.id === id);
   if (memberIndex > -1) {
+    const oldStatus = members[memberIndex].status;
     members[memberIndex] = { ...members[memberIndex], ...updates };
     saveData('nampdtech-members', members);
+
+    if (updates.status && updates.status !== oldStatus) {
+         createNotification(`Membership status for ${members[memberIndex].fullName} updated to ${updates.status}.`, `/members`);
+    }
+
     return members[memberIndex];
   }
   return undefined;
@@ -92,6 +124,9 @@ export const addPayment = async (
     };
     payments.push(newPayment);
     saveData('nampdtech-payments', payments);
+    if(status === PaymentStatus.PENDING_CONFIRMATION){
+        createNotification(`New manual payment from ${member.fullName} requires approval.`, `/payment-approvals`);
+    }
     return newPayment;
 }
 
@@ -101,6 +136,9 @@ export const updatePayment = async (id: string, updates: Partial<Payment>): Prom
     if (paymentIndex > -1) {
         payments[paymentIndex] = { ...payments[paymentIndex], ...updates };
         saveData('nampdtech-payments', payments);
+        if(updates.status === PaymentStatus.PAID) {
+            createNotification(`Payment from ${payments[paymentIndex].memberName} has been approved.`, `/financials`);
+        }
         return payments[paymentIndex];
     }
     return undefined;
@@ -127,6 +165,7 @@ export const addAdminAction = async (action: Omit<AdminAction, 'id' | 'dateReque
     };
     adminActions.push(newAction);
     saveData('nampdtech-admin-actions', adminActions);
+    createNotification(`New admin action request for ${action.memberName} from ${action.requesterRole}.`, `/admin-actions`);
     return newAction;
 };
 
@@ -157,8 +196,108 @@ export const addCommunication = async (comm: Omit<Communication, 'id' | 'date'>)
     };
     communications.unshift(newComm); // Add to the beginning
     saveData('nampdtech-communications', communications);
+    createNotification(`New announcement: "${newComm.title}"`, `/dashboard`);
     return newComm;
 }
+
+
+// Role Functions
+export const getRoles = async (): Promise<Role[]> => {
+    await delay(300);
+    return [...roles];
+};
+
+export const addRole = async (role: Omit<Role, 'id'>): Promise<Role> => {
+    await delay(500);
+    const newRole: Role = { ...role, id: `role-${Date.now()}` };
+    roles.push(newRole);
+    saveData('nampdtech-roles', roles);
+    return newRole;
+};
+
+export const updateRole = async (id: string, updates: Partial<Role>): Promise<Role | undefined> => {
+    await delay(500);
+    const roleIndex = roles.findIndex(r => r.id === id);
+    if (roleIndex > -1) {
+        roles[roleIndex] = { ...roles[roleIndex], ...updates };
+        saveData('nampdtech-roles', roles);
+        return roles[roleIndex];
+    }
+    return undefined;
+};
+
+export const deleteRole = async (id: string): Promise<boolean> => {
+    await delay(500);
+    const initialLength = roles.length;
+    roles = roles.filter(r => r.id !== id);
+    if (roles.length < initialLength) {
+        saveData('nampdtech-roles', roles);
+        return true;
+    }
+    return false;
+};
+
+// Template Functions
+export const getTemplates = async (): Promise<Template[]> => {
+    await delay(300);
+    return [...templates];
+};
+
+export const addTemplate = async (template: Omit<Template, 'id'>): Promise<Template> => {
+    await delay(500);
+    const newTemplate: Template = { ...template, id: `tpl-${Date.now()}` };
+    templates.push(newTemplate);
+    saveData('nampdtech-templates', templates);
+    return newTemplate;
+};
+
+export const updateTemplate = async (id: string, updates: Partial<Template>): Promise<Template | undefined> => {
+    await delay(500);
+    const templateIndex = templates.findIndex(t => t.id === id);
+    if (templateIndex > -1) {
+        templates[templateIndex] = { ...templates[templateIndex], ...updates };
+        saveData('nampdtech-templates', templates);
+        return templates[templateIndex];
+    }
+    return undefined;
+};
+
+export const deleteTemplate = async (id: string): Promise<boolean> => {
+    await delay(500);
+    const initialLength = templates.length;
+    templates = templates.filter(t => t.id !== id);
+    if (templates.length < initialLength) {
+        saveData('nampdtech-templates', templates);
+        return true;
+    }
+    return false;
+};
+
+
+// Notification Functions
+export const getNotifications = async (): Promise<InAppNotification[]> => {
+    await delay(200);
+    return [...notifications];
+};
+
+export const markNotificationAsRead = async (id: string): Promise<InAppNotification | undefined> => {
+    await delay(100);
+    const notifIndex = notifications.findIndex(n => n.id === id);
+    if(notifIndex > -1) {
+        notifications[notifIndex].read = true;
+        saveData('nampdtech-notifications', notifications);
+        return notifications[notifIndex];
+    }
+    return undefined;
+};
+
+export const markAllNotificationsAsRead = async (): Promise<InAppNotification[]> => {
+    await delay(300);
+    notifications.forEach(n => n.read = true);
+    saveData('nampdtech-notifications', notifications);
+    return [...notifications];
+};
+
 
 // Simulated Cron Job
 export const checkAndCreateAnnualDues = async () => {

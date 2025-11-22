@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { Link } from 'react-router-dom';
+import NotificationBell from '../ui/NotificationBell';
 
 const Header: React.FC<{ sidebarOpen: boolean; setSidebarOpen: (open: boolean) => void }> = ({ sidebarOpen, setSidebarOpen }) => {
   const { user, logout } = useAuth();
@@ -27,7 +27,9 @@ const Header: React.FC<{ sidebarOpen: boolean; setSidebarOpen: (open: boolean) =
             </button>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-4">
+            <NotificationBell />
+            <div className="w-px h-6 bg-gray-200" />
             <div className="relative inline-flex" >
               <div className="flex items-center truncate">
                  <img className="w-8 h-8 rounded-full mr-2" src={`https://i.pravatar.cc/40?u=${user?.email}`} alt="Avatar" />
@@ -37,7 +39,7 @@ const Header: React.FC<{ sidebarOpen: boolean; setSidebarOpen: (open: boolean) =
                  </div>
               </div>
             </div>
-            <button onClick={logout} className="ml-4 text-sm bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+            <button onClick={logout} className="ml-2 text-sm bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
                 Logout
             </button>
           </div>

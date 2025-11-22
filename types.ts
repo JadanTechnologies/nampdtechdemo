@@ -22,6 +22,7 @@ export enum MembershipStatus {
   PENDING_CHAIRMAN = 'Pending Chairman Approval',
   PENDING_STATE = 'Pending State Admin Approval',
   PENDING_PAYMENT = 'Pending Payment',
+  // FIX: Corrected typo from PAYMANT to PAYMENT
   PENDING_MANUAL_PAYMENT_CONFIRMATION = 'Pending Manual Payment Confirmation',
   ACTIVE = 'Active',
   REJECTED = 'Rejected',
@@ -35,7 +36,8 @@ export type AdminActionType = 'Suspend' | 'Ban' | 'Deactivate' | 'Reactivate' | 
 export interface User {
   id: string;
   email: string;
-  role: UserRole;
+  role: UserRole; // This remains the base, hardcoded role
+  customRoleId?: string; // For staff with custom roles
   state?: string; // For State Admins and Chairmen
   memberDetails?: MemberApplication;
 }
@@ -95,23 +97,62 @@ export interface Communication {
     id: string;
     title: string;
     content: string;
-    targetRoles: UserRole[];
+    targetRoles: (UserRole | string)[]; // Can target base roles or custom role IDs
     author: string;
     date: string;
 }
 
-// For future RBAC system
+// For RBAC system
 export type Permission = 
-  | 'manage_members'
-  | 'approve_applications'
-  | 'view_financials'
-  | 'manage_settings'
-  | 'send_communications'
-  | 'manage_roles';
+  | 'manage_members' // Suspend, ban, etc.
+  | 'approve_applications' // Approve/reject new members
+  | 'approve_payments' // Approve manual payments
+  | 'view_financials' // View financial dashboard
+  | 'manage_settings' // Change platform settings
+  | 'send_communications' // Send announcements
+  | 'manage_roles' // Create, edit, delete roles
+  | 'manage_templates' // Manage SMS/Email templates
+  | 'host_conferences'; // Host live conferences
+
+export const ALL_PERMISSIONS: Permission[] = [
+    'manage_members', 'approve_applications', 'approve_payments', 'view_financials', 'manage_settings', 
+    'send_communications', 'manage_roles', 'manage_templates', 'host_conferences'
+];
+
 
 export interface Role {
     id: string;
     name: string;
     description: string;
     permissions: Permission[];
+}
+
+export interface Template {
+    id: string;
+    name: string;
+    type: 'sms' | 'email';
+    content: string;
+}
+
+export interface InAppNotification {
+    id: string;
+    message: string;
+    read: boolean;
+    date: string;
+    link?: string; // e.g., /approvals/mem-123
+}
+
+export interface MaintenanceSettings {
+    enabled: boolean;
+    message: string;
+    scheduled: boolean;
+    startTime: string;
+    endTime: string;
+}
+
+export interface ApiKeySettings {
+    twilioSid: string;
+    twilioAuthToken: string;
+    resendApiKey: string;
+    firebaseApiKey: string;
 }

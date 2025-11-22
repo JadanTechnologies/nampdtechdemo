@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useSettings, Settings } from '../context/SettingsContext';
-import { MOCK_USERS } from '../constants';
-import { UserRole } from '../types';
 import { useBranding, Branding } from '../context/BrandingContext';
 import Toast from '../components/ui/Toast';
 
@@ -21,14 +19,37 @@ const SettingsPage: React.FC = () => {
     setSettingsForm(settings);
   }, [settings]);
 
-  const handleBrandingInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, form: 'branding' | 'settings') => {
       const { name, value } = e.target;
-      setBrandingForm(prev => ({...prev, [name]: value }));
+      const keys = name.split('.');
+      
+      const setForm = form === 'branding' ? setBrandingForm : setSettingsForm as any;
+
+      if (keys.length === 2) {
+          const [parent, child] = keys;
+          setForm((prev: any) => ({
+              ...prev,
+              [parent]: { ...prev[parent], [child]: value }
+          }));
+      } else {
+          setForm((prev: any) => ({...prev, [name]: value }));
+      }
   }
   
-  const handleBrandingToggleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleToggleChange = (e: React.ChangeEvent<HTMLInputElement>, form: 'branding' | 'settings') => {
     const { name, checked } = e.target;
-    setBrandingForm(prev => ({...prev, [name]: checked }));
+    const keys = name.split('.');
+    const setForm = form === 'branding' ? setBrandingForm : setSettingsForm as any;
+
+     if (keys.length === 2) {
+          const [parent, child] = keys;
+          setForm((prev: any) => ({
+              ...prev,
+              [parent]: { ...prev[parent], [child]: checked }
+          }));
+      } else {
+          setForm((prev: any) => ({...prev, [name]: checked }));
+      }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof Branding) => {
@@ -42,49 +63,15 @@ const SettingsPage: React.FC = () => {
     }
   }
 
-  const handleBrandingSave = (e: React.FormEvent) => {
+  const handleSave = (e: React.FormEvent, form: 'branding' | 'settings', message: string) => {
       e.preventDefault();
-      updateBranding(brandingForm);
-      setToastMessage('Branding settings saved successfully!');
-  }
-
-  const handleSettingsInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const { name, value } = e.target;
-      const keys = name.split('.');
-      if (keys.length === 2) {
-          const [parent, child] = keys as [keyof Settings, string];
-          setSettingsForm(prev => ({
-              ...prev,
-              [parent]: {
-                  ...(prev as any)[parent],
-                  [child]: value,
-              }
-          }));
+      if (form === 'branding') {
+          updateBranding(brandingForm);
+      } else {
+          updateSettings(settingsForm);
       }
-  }
-
-  const handleSettingsToggleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, checked } = e.target;
-      const keys = name.split('.');
-      if (keys.length === 2) {
-          const [parent, child] = keys as [keyof Settings, string];
-          setSettingsForm(prev => ({
-              ...prev,
-              [parent]: {
-                  ...(prev as any)[parent],
-                  [child]: checked,
-              }
-          }));
-      }
-  }
-
-  const handleSettingsSave = (e: React.FormEvent, message: string) => {
-      e.preventDefault();
-      updateSettings(settingsForm);
       setToastMessage(message);
   }
-  
-  const adminUsers = MOCK_USERS.filter(u => u.role !== UserRole.MEMBER);
 
   return (
     <div>
@@ -97,108 +84,96 @@ const SettingsPage: React.FC = () => {
       )}
       <h1 className="text-3xl font-bold text-dark mb-6">Platform Settings</h1>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
         {/* Branding Settings */}
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">Branding Settings</h2>
-           <form onSubmit={handleBrandingSave} className="space-y-4">
+        <div className="bg-white p-6 rounded-lg shadow-lg lg:col-span-1">
+          <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">Branding</h2>
+           <form onSubmit={(e) => handleSave(e, 'branding', 'Branding saved!')} className="space-y-4">
                 <div>
                     <label htmlFor="brandName" className="block text-sm font-medium text-gray-700">Brand Name</label>
-                    <input type="text" name="brandName" id="brandName" value={brandingForm.brandName} onChange={handleBrandingInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                    <input type="text" name="brandName" id="brandName" value={brandingForm.brandName} onChange={(e) => handleInputChange(e, 'branding')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
                 </div>
                  <div>
                     <label htmlFor="logoUrl" className="block text-sm font-medium text-gray-700">Main Logo</label>
                     {brandingForm.logoUrl && <img src={brandingForm.logoUrl} alt="logo preview" className="h-16 w-auto my-2 bg-gray-100 p-2 rounded"/>}
                     <input type="file" name="logoUrl" id="logoUrl" onChange={(e) => handleFileChange(e, 'logoUrl')} accept="image/*" className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"/>
                 </div>
-                 <div>
-                    <label htmlFor="faviconUrl" className="block text-sm font-medium text-gray-700">Favicon</label>
-                    {brandingForm.faviconUrl && <img src={brandingForm.faviconUrl} alt="favicon preview" className="h-8 w-8 my-2 bg-gray-100 p-1 rounded"/>}
-                    <input type="file" name="faviconUrl" id="faviconUrl" onChange={(e) => handleFileChange(e, 'faviconUrl')} accept="image/x-icon,image/png,image/svg+xml" className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"/>
-                </div>
-                 <div>
-                    <label htmlFor="cubeLogoUrl" className="block text-sm font-medium text-gray-700">3D Cube Logo (Landing Page)</label>
-                    {brandingForm.cubeLogoUrl && <img src={brandingForm.cubeLogoUrl} alt="cube logo preview" className="h-16 w-16 my-2 bg-gray-100 p-2 rounded"/>}
-                    <input type="file" name="cubeLogoUrl" id="cubeLogoUrl" onChange={(e) => handleFileChange(e, 'cubeLogoUrl')} accept="image/*" className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"/>
-                </div>
                  <div className="flex items-center justify-between">
                     <label htmlFor="showLogoInHeader" className="font-medium text-gray-700">Show Logo in Header</label>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="showLogoInHeader" name="showLogoInHeader" className="sr-only peer" checked={brandingForm.showLogoInHeader} onChange={handleBrandingToggleChange} />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                    </label>
+                    <input type="checkbox" id="showLogoInHeader" name="showLogoInHeader" checked={brandingForm.showLogoInHeader} onChange={(e) => handleToggleChange(e, 'branding')} />
                 </div>
                  <div>
                     <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700">Contact Email</label>
-                    <input type="email" name="contactEmail" id="contactEmail" value={brandingForm.contactEmail} onChange={handleBrandingInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-                </div>
-                 <div>
-                    <label htmlFor="contactPhone" className="block text-sm font-medium text-gray-700">Contact Phone</label>
-                    <input type="tel" name="contactPhone" id="contactPhone" value={brandingForm.contactPhone} onChange={handleBrandingInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-                </div>
-                <div>
-                    <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
-                    <textarea name="address" id="address" value={brandingForm.address} onChange={handleBrandingInputChange} rows={3} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                    <input type="email" name="contactEmail" id="contactEmail" value={brandingForm.contactEmail} onChange={(e) => handleInputChange(e, 'branding')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
                 </div>
                  <button type="submit" className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">Save Branding</button>
            </form>
         </div>
         
-        <div className="space-y-8">
+        <div className="space-y-8 lg:col-span-2">
+            {/* Maintenance Mode */}
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+                <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">Maintenance Mode</h2>
+                <form onSubmit={(e) => handleSave(e, 'settings', 'Maintenance settings saved!')} className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-md">
+                        <label htmlFor="maintenanceMode.enabled" className="font-medium text-blue-800">Enable Maintenance Mode</label>
+                        <input type="checkbox" id="maintenanceMode.enabled" name="maintenanceMode.enabled" checked={settingsForm.maintenanceMode.enabled} onChange={(e) => handleToggleChange(e, 'settings')} />
+                    </div>
+                     <div>
+                        <label htmlFor="maintenanceMode.message" className="block text-sm font-medium text-gray-700">Maintenance Message</label>
+                        <textarea name="maintenanceMode.message" id="maintenanceMode.message" value={settingsForm.maintenanceMode.message} onChange={(e) => handleInputChange(e, 'settings')} rows={3} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                    </div>
+                    {/* Placeholder for scheduling - can be implemented with a library like react-datetime */}
+                    <p className="text-sm text-gray-500 text-center">Scheduling feature coming soon.</p>
+                    <button type="submit" className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">Save Maintenance Settings</button>
+                </form>
+            </div>
+
+            {/* API Integrations */}
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+                <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">API Integrations</h2>
+                <form onSubmit={(e) => handleSave(e, 'settings', 'API keys saved!')} className="space-y-4">
+                    <h3 className="font-semibold text-gray-600">Twilio (SMS)</h3>
+                     <div>
+                        <label htmlFor="apiKeys.twilioSid" className="block text-sm font-medium text-gray-700">Account SID</label>
+                        <input type="password" name="apiKeys.twilioSid" id="apiKeys.twilioSid" value={settingsForm.apiKeys.twilioSid} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                    </div>
+                     <div>
+                        <label htmlFor="apiKeys.twilioAuthToken" className="block text-sm font-medium text-gray-700">Auth Token</label>
+                        <input type="password" name="apiKeys.twilioAuthToken" id="apiKeys.twilioAuthToken" value={settingsForm.apiKeys.twilioAuthToken} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                    </div>
+                    <hr/>
+                    <h3 className="font-semibold text-gray-600">Resend (Email)</h3>
+                     <div>
+                        <label htmlFor="apiKeys.resendApiKey" className="block text-sm font-medium text-gray-700">API Key</label>
+                        <input type="password" name="apiKeys.resendApiKey" id="apiKeys.resendApiKey" value={settingsForm.apiKeys.resendApiKey} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                    </div>
+                     <hr/>
+                     <h3 className="font-semibold text-gray-600">Firebase (Push Notifications)</h3>
+                     <div>
+                        <label htmlFor="apiKeys.firebaseApiKey" className="block text-sm font-medium text-gray-700">API Key</label>
+                        <input type="password" name="apiKeys.firebaseApiKey" id="apiKeys.firebaseApiKey" value={settingsForm.apiKeys.firebaseApiKey} onChange={(e) => handleInputChange(e, 'settings')} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                    </div>
+                     <button type="submit" className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">Save API Keys</button>
+                </form>
+            </div>
+
             {/* Payment Gateway Settings */}
             <div className="bg-white p-6 rounded-lg shadow-lg">
                 <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">Payment Gateways</h2>
-                <form onSubmit={(e) => handleSettingsSave(e, 'Payment settings saved!')} className="space-y-4">
+                <form onSubmit={(e) => handleSave(e, 'settings', 'Payment settings saved!')} className="space-y-4">
                     <div className="flex items-center justify-between">
                         <label className="font-medium text-gray-700">Enable Paystack</label>
-                        <input type="checkbox" name="paymentGateways.paystackEnabled" className="toggle" checked={settingsForm.paymentGateways.paystackEnabled} onChange={handleSettingsToggleChange} />
+                        <input type="checkbox" name="paymentGateways.paystackEnabled" checked={settingsForm.paymentGateways.paystackEnabled} onChange={(e) => handleToggleChange(e, 'settings')} />
                     </div>
-                    <div className="flex items-center justify-between">
-                        <label className="font-medium text-gray-700">Enable Monnify</label>
-                        <input type="checkbox" name="paymentGateways.monnifyEnabled" className="toggle" checked={settingsForm.paymentGateways.monnifyEnabled} onChange={handleSettingsToggleChange} />
-                    </div>
-                     <div className="flex items-center justify-between">
-                        <label className="font-medium text-gray-700">Enable Flutterwave</label>
-                        <input type="checkbox" name="paymentGateways.flutterwaveEnabled" className="toggle" checked={settingsForm.paymentGateways.flutterwaveEnabled} onChange={handleSettingsToggleChange} />
-                    </div>
-                    <div>
+                     <div>
                         <label htmlFor="manualInstructions" className="block text-sm font-medium text-gray-700">Manual Payment Instructions</label>
-                        <textarea name="paymentGateways.manualPaymentInstructions" id="manualInstructions" value={settingsForm.paymentGateways.manualPaymentInstructions} onChange={handleSettingsInputChange} rows={5} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                        <textarea name="paymentGateways.manualPaymentInstructions" id="manualInstructions" value={settingsForm.paymentGateways.manualPaymentInstructions} onChange={(e) => handleInputChange(e, 'settings')} rows={5} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
                     </div>
                     <button type="submit" className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">Save Payment Settings</button>
                 </form>
             </div>
-        </div>
-        
-        {/* Manage Admins */}
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">Manage Admins</h2>
-          <div className="overflow-x-auto max-h-96">
-            <table className="w-full text-sm text-left text-gray-500">
-              <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0">
-                <tr>
-                  <th scope="col" className="px-6 py-3">Email</th>
-                  <th scope="col" className="px-6 py-3">Role</th>
-                  <th scope="col" className="px-6 py-3">State</th>
-                  <th scope="col" className="px-6 py-3">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {adminUsers.map(user => (
-                   <tr key={user.id} className="bg-white border-b hover:bg-gray-50">
-                      <td className="px-6 py-4 font-medium text-gray-900">{user.email}</td>
-                      <td className="px-6 py-4">{user.role}</td>
-                      <td className="px-6 py-4">{user.state || 'N/A'}</td>
-                      <td className="px-6 py-4">
-                        <button className="font-medium text-red-600 hover:underline">Remove</button>
-                      </td>
-                    </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-           <button className="mt-4 w-full bg-secondary text-white py-2 px-4 rounded-md hover:bg-primary transition">Add New Admin</button>
         </div>
       </div>
     </div>

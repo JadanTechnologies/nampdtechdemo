@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
+import { MaintenanceSettings, ApiKeySettings } from '../types';
 
 export interface PaymentGatewaySettings {
   paystackEnabled: boolean;
@@ -9,21 +10,36 @@ export interface PaymentGatewaySettings {
 
 export interface Settings {
   paymentGateways: PaymentGatewaySettings;
+  maintenanceMode: MaintenanceSettings;
+  apiKeys: ApiKeySettings;
 }
 
 interface SettingsContextType {
   settings: Settings;
-  updateSettings: (newSettings: Settings) => void;
+  updateSettings: (newSettings: Partial<Settings>) => void;
   loading: boolean;
 }
 
 const defaultSettings: Settings = {
     paymentGateways: {
         paystackEnabled: true,
-        monnifyEnabled: true,
-        flutterwaveEnabled: true,
+        monnifyEnabled: false,
+        flutterwaveEnabled: false,
         manualPaymentInstructions: 'Please make a payment to the following account:\n\nBank: Zenith Bank\nAccount Number: 1234567890\nAccount Name: NAMPDTech\n\nAfter payment, please upload a screenshot of your receipt.',
     },
+    maintenanceMode: {
+        enabled: false,
+        message: 'Our portal is currently down for scheduled maintenance. We should be back shortly. Thank you for your patience.',
+        scheduled: false,
+        startTime: '',
+        endTime: '',
+    },
+    apiKeys: {
+        twilioSid: '',
+        twilioAuthToken: '',
+        resendApiKey: '',
+        firebaseApiKey: '',
+    }
 };
 
 export const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -36,16 +52,15 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
     try {
       const storedSettings = localStorage.getItem('nampdtech-settings');
       if (storedSettings) {
-        // Merge stored settings with defaults to handle new fields
         const parsedSettings = JSON.parse(storedSettings);
-        setSettings({
-            ...defaultSettings,
-            ...parsedSettings,
-            paymentGateways: {
-                ...defaultSettings.paymentGateways,
-                ...parsedSettings.paymentGateways
-            }
-        });
+        // Deep merge to prevent new default fields from being overwritten by old stored data
+        setSettings(prev => ({
+          ...prev,
+          ...parsedSettings,
+          paymentGateways: { ...prev.paymentGateways, ...parsedSettings.paymentGateways },
+          maintenanceMode: { ...prev.maintenanceMode, ...parsedSettings.maintenanceMode },
+          apiKeys: { ...prev.apiKeys, ...parsedSettings.apiKeys },
+        }));
       } else {
         localStorage.setItem('nampdtech-settings', JSON.stringify(defaultSettings));
       }
@@ -57,9 +72,12 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   }, []);
 
-  const updateSettings = (newSettings: Settings) => {
-    setSettings(newSettings);
-    localStorage.setItem('nampdtech-settings', JSON.stringify(newSettings));
+  const updateSettings = (newSettings: Partial<Settings>) => {
+    setSettings(prev => {
+        const updated = {...prev, ...newSettings};
+        localStorage.setItem('nampdtech-settings', JSON.stringify(updated));
+        return updated;
+    });
   };
 
   return (

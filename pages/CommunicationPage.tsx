@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
-import { UserRole } from '../types';
-import { addCommunication } from '../services/mockApi';
+import React, { useState, useEffect } from 'react';
+import { UserRole, Template } from '../types';
+import { addCommunication, getTemplates } from '../services/mockApi';
 import Spinner from '../components/ui/Spinner';
 import { useAuth } from '../hooks/useAuth';
 import Toast from '../components/ui/Toast';
@@ -11,14 +11,36 @@ const CommunicationPage: React.FC = () => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [targetRoles, setTargetRoles] = useState<UserRole[]>([]);
+    const [templates, setTemplates] = useState<Template[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchTemplates = async () => {
+            const fetchedTemplates = await getTemplates();
+            setTemplates(fetchedTemplates.filter(t => t.type === 'email')); // Assuming announcements are emails
+        }
+        fetchTemplates();
+    }, []);
 
     const handleRoleChange = (role: UserRole) => {
         setTargetRoles(prev => 
             prev.includes(role) ? prev.filter(r => r !== role) : [...prev, role]
         );
     };
+    
+    const handleTemplateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const templateId = e.target.value;
+        const selectedTemplate = templates.find(t => t.id === templateId);
+        if (selectedTemplate) {
+            setTitle(prev => prev || selectedTemplate.name); // Don't overwrite if title is already set
+            setContent(selectedTemplate.content);
+        } else {
+            // Reset if "Select a template" is chosen
+            setContent('');
+        }
+    };
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -56,6 +78,20 @@ const CommunicationPage: React.FC = () => {
             <h1 className="text-3xl font-bold text-dark mb-6">Send Communication</h1>
             <div className="bg-white p-8 rounded-lg shadow-lg max-w-4xl mx-auto">
                 <form onSubmit={handleSubmit}>
+                     <div className="mb-6">
+                        <label htmlFor="template" className="block text-sm font-medium text-gray-700 mb-1">
+                            Load from Template (Optional)
+                        </label>
+                        <select
+                            id="template"
+                            onChange={handleTemplateChange}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary transition"
+                        >
+                            <option value="">Select a template</option>
+                            {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                        </select>
+                    </div>
+
                     <div className="mb-6">
                         <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
                             Announcement Title
@@ -84,6 +120,8 @@ const CommunicationPage: React.FC = () => {
                             placeholder="Enter the full details of your announcement here..."
                             required
                         />
+                         {/* FIX: Simplified the placeholder text expression to avoid potential parsing issues. */}
+                         <p className="text-xs text-gray-500 mt-1">You can use placeholders like {'{{fullName}}'} or {'{{email}}'}.</p>
                     </div>
 
                     <div className="mb-6">
