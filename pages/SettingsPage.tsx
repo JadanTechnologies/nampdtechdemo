@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSettings, Settings } from '../context/SettingsContext';
 import { useBranding, Branding } from '../context/BrandingContext';
 import Toast from '../components/ui/Toast';
 import { NIGERIAN_STATES } from '../constants';
+import { MemberApplication } from '../types';
+import { getMembers, updateMember } from '../services/mockApi';
+import Spinner from '../components/ui/Spinner';
 
 const SettingsPage: React.FC = () => {
   const { branding, updateBranding } = useBranding();
@@ -11,6 +14,10 @@ const SettingsPage: React.FC = () => {
   const [brandingForm, setBrandingForm] = useState<Branding>(branding);
   const [settingsForm, setSettingsForm] = useState<Settings>(settings);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const [members, setMembers] = useState<MemberApplication[]>([]);
+  const [membersLoading, setMembersLoading] = useState(true);
+  const [memberSearchTerm, setMemberSearchTerm] = useState('');
   
   useEffect(() => {
     setBrandingForm(branding);
@@ -19,6 +26,16 @@ const SettingsPage: React.FC = () => {
   useEffect(() => {
     setSettingsForm(settings);
   }, [settings]);
+
+   useEffect(() => {
+        const fetchMembers = async () => {
+            setMembersLoading(true);
+            const allMembers = await getMembers();
+            setMembers(allMembers.filter(m => m.status !== 'Deleted'));
+            setMembersLoading(false);
+        };
+        fetchMembers();
+    }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, form: 'branding' | 'settings') => {
       const { name, value } = e.target;
@@ -88,6 +105,25 @@ const SettingsPage: React.FC = () => {
       }
       setToastMessage(message);
   }
+  
+   const handleForumStatusChange = async (memberId: string, newStatus: 'active' | 'muted' | 'banned') => {
+        const originalMembers = [...members];
+        setMembers(prev => prev.map(m => m.id === memberId ? { ...m, forumStatus: newStatus } : m));
+        try {
+            await updateMember(memberId, { forumStatus: newStatus });
+            setToastMessage('User forum status updated successfully.');
+        } catch (error) {
+            console.error('Failed to update forum status', error);
+            setToastMessage('Failed to update status. Please try again.');
+            setMembers(originalMembers);
+        }
+    };
+
+    const filteredMembers = useMemo(() => members.filter(m => 
+        m.fullName.toLowerCase().includes(memberSearchTerm.toLowerCase()) || 
+        m.email.toLowerCase().includes(memberSearchTerm.toLowerCase())
+    ), [members, memberSearchTerm]);
+
 
   return (
     <div>
@@ -144,6 +180,84 @@ const SettingsPage: React.FC = () => {
                     <p className="text-sm text-gray-500 text-center">Scheduling feature coming soon.</p>
                     <button type="submit" className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">Save Maintenance Settings</button>
                 </form>
+            </div>
+            
+             {/* Community Hub Settings */}
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+                <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">Community Hub</h2>
+                <form onSubmit={(e) => handleSave(e, 'settings', 'Community Hub settings saved!')} className="space-y-4">
+                     <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-md">
+                        <label htmlFor="communityHub.enabled" className="font-medium text-blue-800">Enable Community Hub</label>
+                        <input type="checkbox" id="communityHub.enabled" name="communityHub.enabled" checked={settingsForm.communityHub.enabled} onChange={(e) => handleToggleChange(e, 'settings')} />
+                    </div>
+                     <div>
+                        <label className="block text-sm font-medium text-gray-700">Enabled States</label>
+                        <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-60 overflow-y-auto p-2 border rounded-md">
+                            {NIGERIAN_STATES.map(state => (
+                                <label key={state} className="flex items-center gap-2 text-sm">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={settingsForm.communityHub.enabledStates.includes(state)}
+                                        onChange={(e) => handleStateToggle(state, e.target.checked)}
+                                    />
+                                    {state}
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+                    <button type="submit" className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">Save Community Settings</button>
+                </form>
+            </div>
+
+            {/* Community Hub User Management */}
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+                <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">Community Hub User Management</h2>
+                <div className="mb-4">
+                    <input 
+                        type="text"
+                        placeholder="Search for a member by name or email..."
+                        value={memberSearchTerm}
+                        onChange={e => setMemberSearchTerm(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    />
+                </div>
+                {membersLoading ? <div className="flex justify-center"><Spinner /></div> : (
+                    <div className="max-h-96 overflow-y-auto">
+                        <table className="w-full text-sm text-left text-gray-500">
+                            <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0">
+                                <tr>
+                                    <th scope="col" className="px-6 py-3">Member</th>
+                                    <th scope="col" className="px-6 py-3">State</th>
+                                    <th scope="col" className="px-6 py-3">Forum Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredMembers.map(member => (
+                                    <tr key={member.id} className="bg-white border-b hover:bg-gray-50">
+                                        <td className="px-6 py-4 font-medium text-gray-900">{member.fullName}</td>
+                                        <td className="px-6 py-4">{member.state}</td>
+                                        <td className="px-6 py-4">
+                                            <select
+                                                value={member.forumStatus}
+                                                onChange={(e) => handleForumStatusChange(member.id, e.target.value as 'active' | 'muted' | 'banned')}
+                                                className={`border-gray-300 rounded-md shadow-sm text-xs p-1 capitalize ${
+                                                    member.forumStatus === 'banned' ? 'bg-red-100 text-red-800' :
+                                                    member.forumStatus === 'muted' ? 'bg-yellow-100 text-yellow-800' :
+                                                    'bg-green-100 text-green-800'
+                                                }`}
+                                            >
+                                                <option value="active">Active</option>
+                                                <option value="muted">Muted</option>
+                                                <option value="banned">Banned</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        {filteredMembers.length === 0 && <p className="text-center py-4 text-gray-500">No members found.</p>}
+                    </div>
+                )}
             </div>
 
             {/* API Integrations */}
@@ -254,33 +368,6 @@ const SettingsPage: React.FC = () => {
                     </fieldset>
                     
                     <button type="submit" className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">Save API Keys</button>
-                </form>
-            </div>
-
-            {/* Community Hub Settings */}
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h2 className="text-xl font-semibold text-dark mb-4 border-b pb-2">Community Hub</h2>
-                <form onSubmit={(e) => handleSave(e, 'settings', 'Community Hub settings saved!')} className="space-y-4">
-                     <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-md">
-                        <label htmlFor="communityHub.enabled" className="font-medium text-blue-800">Enable Community Hub</label>
-                        <input type="checkbox" id="communityHub.enabled" name="communityHub.enabled" checked={settingsForm.communityHub.enabled} onChange={(e) => handleToggleChange(e, 'settings')} />
-                    </div>
-                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Enabled States</label>
-                        <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-60 overflow-y-auto p-2 border rounded-md">
-                            {NIGERIAN_STATES.map(state => (
-                                <label key={state} className="flex items-center gap-2 text-sm">
-                                    <input 
-                                        type="checkbox" 
-                                        checked={settingsForm.communityHub.enabledStates.includes(state)}
-                                        onChange={(e) => handleStateToggle(state, e.target.checked)}
-                                    />
-                                    {state}
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-                    <button type="submit" className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-secondary transition">Save Community Settings</button>
                 </form>
             </div>
 
