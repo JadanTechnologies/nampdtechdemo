@@ -61,6 +61,7 @@ export interface MemberApplication {
   registrationDate: string;
   skills?: string[];
   forumStatus: 'active' | 'muted' | 'banned';
+  isOnline?: boolean;
 }
 
 export interface Payment {

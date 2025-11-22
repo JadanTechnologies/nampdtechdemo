@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useSettings } from '../context/SettingsContext';
-import { getChannels, getMessages, addMessage, getMembers, updateMember } from '../services/mockApi';
+import { getChannels, getMessages, addMessage, getMembers, updateMember, startOnlineStatusSimulator, stopOnlineStatusSimulator } from '../services/mockApi';
 import { ChatMessage, MemberApplication, UserRole } from '../types';
 import Spinner from '../components/ui/Spinner';
+import OnlineStatusIndicator from '../components/ui/OnlineStatusIndicator';
 
 const CommunityHubPage: React.FC = () => {
     const { user } = useAuth();
@@ -17,7 +18,7 @@ const CommunityHubPage: React.FC = () => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchAllData = async () => {
             setLoading(true);
             const [fetchedChannels, fetchedMembers] = await Promise.all([
                 getChannels(),
@@ -32,7 +33,25 @@ const CommunityHubPage: React.FC = () => {
 
             setLoading(false);
         };
-        fetchData();
+        fetchAllData();
+        
+        startOnlineStatusSimulator();
+        
+        const memberStatusInterval = setInterval(async () => {
+            const fetchedMembers = await getMembers();
+             setMembers(prevMembers => 
+                prevMembers.map(pm => {
+                    const updatedMember = fetchedMembers.find(fm => fm.id === pm.id);
+                    return updatedMember ? {...pm, isOnline: updatedMember.isOnline} : pm;
+                })
+             );
+        }, 3000);
+
+        return () => {
+            stopOnlineStatusSimulator();
+            clearInterval(memberStatusInterval);
+        };
+
     }, [settings.communityHub.enabledStates]);
 
     useEffect(() => {
@@ -98,8 +117,9 @@ const CommunityHubPage: React.FC = () => {
 
     return (
         <div className="h-[calc(100vh-120px)] flex flex-col bg-white rounded-lg shadow-lg">
-            <header className="border-b p-4">
+            <header className="border-b p-4 flex justify-between items-center">
                 <h1 className="text-xl font-bold text-dark"># {currentChannel}</h1>
+                <OnlineStatusIndicator />
             </header>
             <div className="flex flex-1 overflow-hidden">
                 {/* Channels List */}
@@ -161,10 +181,13 @@ const CommunityHubPage: React.FC = () => {
                      <ul>
                         {members.filter(m => m.state === currentChannel || currentChannel === 'General').map(member => (
                              <li key={member.id} className="px-4 py-2 hover:bg-gray-200 flex justify-between items-center group">
-                               <div>
-                                   <p className="font-semibold text-sm text-dark">{member.fullName}</p>
-                                   <p className="text-xs text-gray-500">{member.role} - {member.state}</p>
-                                   {member.forumStatus !== 'active' && <p className="text-xs text-red-500 capitalize font-bold">{member.forumStatus}</p>}
+                               <div className="flex items-center gap-2">
+                                   <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${member.isOnline ? 'bg-green-500' : 'bg-gray-400'}`} title={member.isOnline ? 'Online' : 'Offline'}></span>
+                                   <div>
+                                       <p className="font-semibold text-sm text-dark">{member.fullName}</p>
+                                       <p className="text-xs text-gray-500">{member.role} - {member.state}</p>
+                                       {member.forumStatus !== 'active' && <p className="text-xs text-red-500 capitalize font-bold">{member.forumStatus}</p>}
+                                   </div>
                                </div>
                                 {(user?.role === UserRole.SUPER_ADMIN || (user?.role === UserRole.STATE_ADMIN && user.state === member.state)) && user?.id !== member.userId && (
                                    <div className="hidden group-hover:flex gap-1">

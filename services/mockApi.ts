@@ -1,4 +1,3 @@
-
 import { MemberApplication, MembershipStatus, Payment, PaymentGateway, PaymentStatus, User, AdminAction, Communication, UserRole, Role, Template, InAppNotification, ALL_PERMISSIONS, ChatMessage } from '../types';
 import { MOCK_MEMBERS, MOCK_PAYMENTS, MOCK_USERS, NIGERIAN_STATES } from '../constants';
 
@@ -52,6 +51,37 @@ const saveData = <T,>(key: string, data: T[]) => {
 // Simulate API delay
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
+let onlineStatusInterval: number | null = null;
+
+// Initialize isOnline status if not present
+members.forEach(m => {
+    if (m.isOnline === undefined) {
+        m.isOnline = Math.random() > 0.7; // default to mostly offline
+    }
+});
+saveData('nampdtech-members', members);
+
+
+export const startOnlineStatusSimulator = () => {
+    if (onlineStatusInterval) return;
+    console.log("Starting online status simulator...");
+    onlineStatusInterval = window.setInterval(() => {
+        const memberToToggle = members[Math.floor(Math.random() * members.length)];
+        if(memberToToggle) {
+            memberToToggle.isOnline = !memberToToggle.isOnline;
+            saveData('nampdtech-members', members);
+        }
+    }, 5000); // Toggle a random user every 5 seconds
+};
+
+export const stopOnlineStatusSimulator = () => {
+    if (onlineStatusInterval) {
+        console.log("Stopping online status simulator.");
+        clearInterval(onlineStatusInterval);
+        onlineStatusInterval = null;
+    }
+};
+
 
 // Notification Helper
 const createNotification = (message: string, link?: string) => {
@@ -70,6 +100,8 @@ const createNotification = (message: string, link?: string) => {
 // Member Functions
 export const getMembers = async (): Promise<MemberApplication[]> => {
   await delay(500);
+  // Re-read from storage to ensure we have the latest data
+  members = initializeData('nampdtech-members', MOCK_MEMBERS);
   return [...members].filter(m => m.status !== MembershipStatus.DELETED);
 };
 
@@ -80,7 +112,7 @@ export const getMemberById = async (id: string): Promise<MemberApplication | und
   return currentMembers.find(m => m.id === id);
 }
 
-export const addMember = async (application: Omit<MemberApplication, 'id' | 'status' | 'registrationDate' | 'accountStatus' | 'forumStatus'>): Promise<MemberApplication> => {
+export const addMember = async (application: Omit<MemberApplication, 'id' | 'status' | 'registrationDate' | 'accountStatus' | 'forumStatus' | 'isOnline'>): Promise<MemberApplication> => {
   await delay(1000);
   const newMember: MemberApplication = {
     ...application,
@@ -88,6 +120,7 @@ export const addMember = async (application: Omit<MemberApplication, 'id' | 'sta
     status: MembershipStatus.PENDING_CHAIRMAN,
     accountStatus: 'Active',
     forumStatus: 'active',
+    isOnline: false,
     registrationDate: new Date().toISOString(),
   };
   members.push(newMember);

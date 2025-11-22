@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useMemo } from 'react';
 import { getMembers, updateMember, addAdminAction } from '../services/mockApi';
 import { MemberApplication, UserRole, MembershipStatus, AccountStatus, AdminActionType } from '../types';
@@ -12,9 +11,16 @@ const MembersPage: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     const [accountStatusFilter, setAccountStatusFilter] = useState('');
+    
+    // State for account actions (suspend, ban, etc.)
     const [actionMember, setActionMember] = useState<MemberApplication | null>(null);
     const [showActionConfirm, setShowActionConfirm] = useState(false);
     const [actionType, setActionType] = useState<AdminActionType | null>(null);
+
+    // State for forum status actions
+    const [forumMember, setForumMember] = useState<MemberApplication | null>(null);
+    const [showForumModal, setShowForumModal] = useState(false);
+    const [newForumStatus, setNewForumStatus] = useState<'active' | 'muted' | 'banned'>('active');
 
 
     const fetchMembers = async () => {
@@ -68,6 +74,23 @@ const MembersPage: React.FC = () => {
         setShowActionConfirm(true);
     };
 
+    const openForumModal = (member: MemberApplication) => {
+        setForumMember(member);
+        setNewForumStatus(member.forumStatus);
+        setShowForumModal(true);
+    };
+
+    const handleForumStatusUpdate = async () => {
+        if (!forumMember) return;
+        
+        await updateMember(forumMember.id, { forumStatus: newForumStatus });
+        alert(`Forum status for ${forumMember.fullName} updated to ${newForumStatus}.`);
+        
+        setShowForumModal(false);
+        setForumMember(null);
+        fetchMembers(); // Refresh data
+    };
+
     const filteredMembers = useMemo(() => {
         return allMembers
             .filter(member => {
@@ -100,6 +123,15 @@ const MembersPage: React.FC = () => {
             'Suspended': 'bg-yellow-100 text-yellow-800',
             'Banned': 'bg-red-100 text-red-800',
             'Deactivated': 'bg-gray-100 text-gray-800'
+        };
+        return <span className={`px-2 py-1 text-xs font-medium rounded-full ${styles[status]}`}>{status}</span>;
+    }
+
+    const getForumStatusBadge = (status: 'active' | 'muted' | 'banned') => {
+        const styles: { [key: string]: string } = {
+            'active': 'bg-green-100 text-green-800',
+            'muted': 'bg-yellow-100 text-yellow-800',
+            'banned': 'bg-red-100 text-red-800',
         };
         return <span className={`px-2 py-1 text-xs font-medium rounded-full ${styles[status]}`}>{status}</span>;
     }
@@ -150,6 +182,7 @@ const MembersPage: React.FC = () => {
                                     <th scope="col" className="px-6 py-3">State</th>
                                     <th scope="col" className="px-6 py-3">Membership</th>
                                     <th scope="col" className="px-6 py-3">Account</th>
+                                    <th scope="col" className="px-6 py-3">Forum</th>
                                     <th scope="col" className="px-6 py-3">Joined</th>
                                     {(user?.role === UserRole.SUPER_ADMIN || user?.role === UserRole.STATE_ADMIN) && <th scope="col" className="px-6 py-3">Actions</th>}
                                 </tr>
@@ -165,6 +198,7 @@ const MembersPage: React.FC = () => {
                                         <td className="px-6 py-4">{member.state}</td>
                                         <td className="px-6 py-4">{getStatusBadge(member.status)}</td>
                                         <td className="px-6 py-4">{getAccountStatusBadge(member.accountStatus)}</td>
+                                        <td className="px-6 py-4">{getForumStatusBadge(member.forumStatus)}</td>
                                         <td className="px-6 py-4">{new Date(member.registrationDate).toLocaleDateString()}</td>
                                          {(user?.role === UserRole.SUPER_ADMIN || user?.role === UserRole.STATE_ADMIN) && (
                                             <td className="px-6 py-4">
@@ -174,6 +208,7 @@ const MembersPage: React.FC = () => {
                                                         <button onClick={() => openActionConfirm(member, 'Suspend')} className="block w-full text-left px-4 py-2 text-sm text-yellow-700 hover:bg-gray-100">Suspend</button>
                                                         <button onClick={() => openActionConfirm(member, 'Ban')} className="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-100">Ban</button>
                                                         <button onClick={() => openActionConfirm(member, 'Reactivate')} className="block w-full text-left px-4 py-2 text-sm text-green-700 hover:bg-gray-100">Reactivate</button>
+                                                        <button onClick={() => openForumModal(member)} className="block w-full text-left px-4 py-2 text-sm text-blue-700 hover:bg-gray-100">Forum Access</button>
                                                         {user.role === UserRole.SUPER_ADMIN && <button onClick={() => openActionConfirm(member, 'Delete')} className="block w-full text-left px-4 py-2 text-sm text-red-800 hover:bg-gray-100">Delete</button>}
                                                     </div>
                                                 </div>
@@ -198,6 +233,35 @@ const MembersPage: React.FC = () => {
                         <div className="flex items-center justify-end p-6 space-x-2 border-t border-gray-200 rounded-b">
                             <button onClick={() => setShowActionConfirm(false)} className="bg-gray-200 text-dark py-2 px-6 rounded-md hover:bg-gray-300">Cancel</button>
                             <button onClick={handleAction} className="bg-red-600 text-white py-2 px-6 rounded-md hover:bg-red-700">Confirm</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {showForumModal && forumMember && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+                        <div className="p-6">
+                            <h3 className="text-xl font-semibold text-gray-900">Manage Forum Access</h3>
+                            <p className="mt-2">Change the forum status for <strong>{forumMember.fullName}</strong>.</p>
+                            <div className="mt-4 space-y-2">
+                                {(['active', 'muted', 'banned'] as const).map(status => (
+                                    <label key={status} className="flex items-center gap-2">
+                                        <input
+                                            type="radio"
+                                            name="forumStatus"
+                                            value={status}
+                                            checked={newForumStatus === status}
+                                            onChange={() => setNewForumStatus(status)}
+                                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                                        />
+                                        <span className="capitalize text-sm">{status}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-end p-6 space-x-2 border-t border-gray-200 rounded-b">
+                            <button onClick={() => setShowForumModal(false)} className="bg-gray-200 text-dark py-2 px-6 rounded-md hover:bg-gray-300">Cancel</button>
+                            <button onClick={handleForumStatusUpdate} className="bg-primary text-white py-2 px-6 rounded-md hover:bg-secondary">Save Changes</button>
                         </div>
                     </div>
                 </div>

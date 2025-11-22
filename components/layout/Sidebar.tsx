@@ -109,7 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, sidebarE
       <div
         id="sidebar"
         ref={sidebar}
-        className={`flex flex-col absolute z-40 left-0 top-0 lg:static lg:left-auto lg:top-auto lg:translate-x-0 transform h-screen overflow-y-scroll lg:overflow-y-auto no-scrollbar w-64 ${sidebarExpanded ? 'lg:w-64' : 'lg:w-20'} 2xl:w-64 shrink-0 bg-primary p-4 transition-all duration-200 ease-in-out ${
+        className={`flex flex-col absolute z-40 left-0 top-0 lg:static lg:left-auto lg:top-auto lg:translate-x-0 transform h-screen overflow-y-scroll lg:overflow-y-auto no-scrollbar w-64 ${sidebarExpanded ? 'lg:w-64' : 'lg:w-20'} shrink-0 bg-primary p-4 transition-all duration-200 ease-in-out ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-64'
         }`}
       >
@@ -131,7 +131,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, sidebarE
           {/* Logo */}
           <NavLink to="/dashboard" className="block">
             {branding.logoUrl && (
-                <img src={branding.logoUrl} alt={`${branding.brandName} Logo`} className={`h-10 w-auto transition-all duration-200 ${sidebarExpanded ? 'lg:w-32' : 'lg:w-10'} 2xl:w-32`} />
+                <img src={branding.logoUrl} alt={`${branding.brandName} Logo`} className={`h-10 w-auto transition-all duration-200 ${sidebarExpanded ? 'lg:w-32' : 'lg:w-10'}`} />
             )}
           </NavLink>
         </div>
@@ -151,7 +151,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, sidebarE
                       <svg className="shrink-0 h-6 w-6" viewBox="0 0 24 24">
                         <path className={`fill-current text-gray-400 ${pathname.startsWith(to) && 'text-accent'}`} d={icon} />
                       </svg>
-                      <span className={`text-sm font-medium ml-3 ${sidebarExpanded ? 'lg:opacity-100' : 'lg:opacity-0'} 2xl:opacity-100 duration-200`}>{label}</span>
+                      <span className={`text-sm font-medium ml-3 ${sidebarExpanded ? 'lg:opacity-100' : 'lg:opacity-0'} duration-200`}>{label}</span>
                     </div>
                   </NavLink>
                 </li>
@@ -161,7 +161,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, sidebarE
         </div>
 
         {/* Expand / collapse button */}
-        <div className="pt-3 hidden lg:inline-flex 2xl:hidden justify-end mt-auto">
+        <div className="pt-3 hidden lg:inline-flex justify-end mt-auto">
             <div className="px-3 py-2">
                 <button onClick={setSidebarExpanded} className="p-2 rounded hover:bg-secondary">
                     <span className="sr-only">Expand / collapse sidebar</span>
